@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@400;600&display=swap');
+
+.projects-section {
+  background: linear-gradient(145deg, #0c0f14, #0d1117);
+  color: #e0f7fa;
+  padding: 80px 20px;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.projects-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  text-align: center;
+  color: #7ee8fa;
+  text-shadow: 0 0 6px #7ee8fa;
+  margin-bottom: 50px;
+  animation: fadeInDown 1s ease;
+}
+
+.projects-canvas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: auto;
+  animation: fadeInUp 1.4s ease-in-out;
+  z-index: 2;
+  position: relative;
+}
+
+.project-tile {
+  background: rgba(20, 25, 35, 0.8);
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid rgba(126, 232, 250, 0.15);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.project-tile:hover {
+  transform: translateY(-5px);
+  border-color: rgba(126, 232, 250, 0.4);
+  box-shadow: 0 10px 25px rgba(126, 232, 250, 0.2);
+}
+
+.project-tile h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  color: #7ee8fa;
+  margin-bottom: 12px;
+}
+
+.project-tile .stack {
+  display: inline-block;
+  background: rgba(126, 232, 250, 0.1);
+  color: #b2ebf2;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+}
+
+.project-tile .desc {
+  font-size: 0.95rem;
+  color: #cfd8dc;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #7ee8fa;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-top: auto;
+}
+
+.project-link svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.project-link:hover {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(126, 232, 250, 0.6);
+}
+
+.projects-glow {
+  position: absolute;
+  width: 70vmax;
+  height: 50vmax;
+  top: -10%;
+  right: 50%;
+  transform: translateX(50%);
+  background: radial-gradient(circle, #7ee8fa33, transparent 70%);
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+  animation: floatGlowAlt 12s ease-in-out infinite;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatGlowAlt {
+  0%, 100% {
+    transform: translateX(50%) translateY(0);
+  }
+  50% {
+    transform: translateX(50%) translateY(20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-title {
+    font-size: 1.6rem;
+  }
+
+  .projects-canvas {
+    grid-template-columns: 1fr;
+  }
+
+  .project-tile {
+    padding: 20px;
+  }
+}

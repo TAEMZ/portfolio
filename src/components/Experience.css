@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@400;600&display=swap');
+
+.experience {
+  padding: 80px 20px;
+  background: #0a0e13;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.experience-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  color: #00f0ff;
+  text-align: center;
+  margin-bottom: 50px;
+  text-shadow: 0 0 8px #00f0ff;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.experience-grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  max-width: 1100px;
+  margin: auto;
+  animation: fadeIn 1.5s ease;
+  z-index: 2;
+  position: relative;
+}
+
+.experience-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 25px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 22px rgba(0, 255, 255, 0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+  position: relative;
+  animation: floatUp 1s ease;
+}
+
+.experience-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 32px rgba(0, 240, 255, 0.15), 0 0 10px #ff00ff33;
+  border: 1px solid #ff00ff55;
+}
+
+.experience-card h3 {
+  color: #00f0ff;
+  font-family: 'Orbitron', sans-serif;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  text-shadow: 0 0 3px #00f0ff;
+}
+
+.experience-card .tech {
+  color: #cfd8dc;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.experience-card ul {
+  padding-left: 20px;
+  list-style: square;
+  color: #cfd8dc;
+  font-size: 0.95rem;
+}
+
+.experience-card li {
+  margin-bottom: 8px;
+}
+
+.experience-glow {
+  position: absolute;
+  width: 80vmax;
+  height: 60vmax;
+  bottom: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, #00f0ff33, transparent 70%);
+  filter: blur(120px);
+  z-index: 0;
+  pointer-events: none;
+  animation: floatGlow 10s ease-in-out infinite;
+}
+
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes floatGlow {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .experience-title {
+    font-size: 1.6rem;
+  }
+
+  .experience-card {
+    padding: 20px;
+  }
+
+  .experience-card h3 {
+    font-size: 1rem;
+  }
+
+  .experience-card ul {
+    font-size: 0.9rem;
+  }
+}

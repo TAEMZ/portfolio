@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600&family=Rajdhani:wght@400;500&display=swap');
+
+.about-section {
+  position: relative;
+  padding: 100px 20px;
+  background: #0a0e13;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+  font-family: 'Rajdhani', sans-serif;
+  z-index: 1;
+}
+
+.about-section::before,
+.about-section::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  left: 20px;
+  right: 20px;
+  background: linear-gradient(90deg, transparent, #00f0ff, transparent);
+  box-shadow: 0 0 10px #00f0ff;
+  z-index: 1;
+}
+
+.about-section::before {
+  top: 0;
+}
+
+.about-section::after {
+  bottom: 0;
+}
+
+.about-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  color: #00f0ff;
+  text-shadow: 0 0 10px #00f0ff;
+  letter-spacing: 3px;
+  position: relative;
+  animation: fadeIn 1.2s ease-out;
+}
+
+.about-title::after {
+  content: "";
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: #00f0ff;
+  box-shadow: 0 0 15px #00f0ff;
+}
+
+.about-card {
+  max-width: 900px;
+  margin: auto;
+  background: rgba(13, 17, 23, 0.7);
+  padding: 40px;
+  border-radius: 15px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 255, 255, 0.1);
+  animation: fadeInUp 1.6s ease-out;
+  position: relative;
+  z-index: 2;
+}
+
+.about-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #cfd8dc;
+  margin-bottom: 30px;
+  animation: fadeIn 2s ease;
+  text-align: left;
+}
+
+.about-text strong {
+  color: #00f0ff;
+  text-shadow: 0 0 5px #00f0ff;
+}
+
+.tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.tech-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 240, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  width: 100px;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.tech-item:hover {
+  transform: translateY(-5px);
+  background: rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.tech-icon {
+  color: #00f0ff;
+  margin-bottom: 8px;
+  font-size: 1.5rem;
+}
+
+.tech-name {
+  color: #cfd8dc;
+  font-size: 0.9rem;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.about-glow {
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, #00f0ff33, transparent 70%);
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+  animation: floatGlow 12s ease-in-out infinite;
+}
+
+.cyber-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Glitch effect */
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.glitch::before {
+  color: #0ff;
+  z-index: -1;
+  animation: glitch-effect 3s infinite;
+}
+
+.glitch::after {
+  color: #f0f;
+  z-index: -2;
+  animation: glitch-effect 2s infinite reverse;
+}
+
+@keyframes glitch-effect {
+  0% { transform: translate(0); }
+  20% { transform: translate(-3px, 3px); }
+  40% { transform: translate(-3px, -3px); }
+  60% { transform: translate(3px, 3px); }
+  80% { transform: translate(3px, -3px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes floatGlow {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .about-card {
+    padding: 25px 20px;
+  }
+
+  .about-text {
+    font-size: 1rem;
+  }
+
+  .about-title {
+    font-size: 1.8rem;
+  }
+
+  .tech-stack {
+    gap: 15px;
+  }
+
+  .tech-item {
+    width: 80px;
+    padding: 10px;
+  }
+}
