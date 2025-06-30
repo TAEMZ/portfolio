@@ -30,7 +30,7 @@ export default function Projects() {
       stack: "HTML + CSS + JS",
       description:
         "A static movie catalog website with card layout, search filtering, usind .",
-      github: "https://github.com/yourusername/movie-repo",
+      github: "https://github.com/TAEMZ/Movie-Repo",
     },
   ];
 
