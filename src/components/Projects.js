@@ -19,11 +19,18 @@ export default function Projects() {
       github: "https://github.com/TAEMZ/Localbusiness",
     },
     {
-      name: "Music Player UI",
+      name: "Music Player ",
       stack: "React",
       description:
         "A custom-designed audio player interface with playlist support and futuristic neon layout.",
-      github: "https://github.com/yourusername/music-player",
+      github: "https://github.com/TAEMZ/music_player",
+    },
+    {
+      name: "Quote generator",
+      stack: "HTML,CSS ,JS",
+      description:
+        "Quote generator from famous movie lines and platform where users talk about their favorite movies.",
+      github: "https://github.com/TAEMZ/Quote-Generator",
     },
     {
       name: "Movie Repository",
