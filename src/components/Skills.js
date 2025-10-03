@@ -14,7 +14,7 @@ export default function Skills() {
       "Css",
     ],
     "Frameworks & Libraries": ["Spring Boot", "React", "Express.js"],
-    Databases: ["Firebase", "PostgreSQL", "MySQL", ,],
+    Databases: ["Firebase", "PostgreSQL", "MySQL", "Superbase"],
     "DevOps & Tools": ["Docker"],
   };
 

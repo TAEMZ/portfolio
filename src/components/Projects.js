@@ -39,6 +39,13 @@ export default function Projects() {
         "A static movie catalog website with card layout, search filtering, usind .",
       github: "https://github.com/TAEMZ/Movie-Repo",
     },
+    {
+      name: "Skill Snap",
+      stack: "Flutter + Superbase",
+      description:
+        "is a peer-to-peer (P2P) skill-sharing platform that connectes individuals to exchange knowledge and abilities directly. Users can teach or learn various ",
+      github: "https://github.com/TAEMZ/SkillSnap/tree/main/skill_snap",
+    },
   ];
 
   return (
