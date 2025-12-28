@@ -12,6 +12,8 @@ import "./App.css";
 export default function App() {
   return (
     <>
+      <div className="tv-static"></div>
+      <div className="scanlines"></div>
       <Navbar />
       <Hero />
       <About />

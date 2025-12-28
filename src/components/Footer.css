@@ -6,20 +6,21 @@
   font-family: 'Orbitron', sans-serif;
   background: rgba(13, 17, 23, 0.9);
   color: #ffffff;
-  border-top: 1px solid rgba(0, 240, 255, 0.2);
-  box-shadow: 0 -8px 24px rgba(0, 255, 255, 0.06);
+  border-top: 1px solid rgba(212, 163, 115, 0.1);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(6px);
 }
 
 .footer a {
-  color: #00f0ff;
+  color: #81d4fa;
   text-decoration: none;
 }
 
 .footer a:hover {
   text-decoration: underline;
-  color: #00c7cc;
+  color: #e0f7fa;
 }
+
 .social-icons {
   margin-top: 15px;
   display: flex;
@@ -29,11 +30,11 @@
 }
 
 .social-icons a {
-  color: #00f0ff;
+  color: #90a4ae;
   transition: transform 0.2s, color 0.3s ease;
 }
 
 .social-icons a:hover {
-  color: #00bcd4;
+  color: #ffffff;
   transform: scale(1.2);
 }

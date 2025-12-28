@@ -15,7 +15,7 @@ export default function Navbar() {
 
   return (
     <nav className="navbar" id="navbar">
-      <h2 className="logo">My Portfolio</h2>
+      <div className="logo"></div>
 
       <div className={`nav-links ${isOpen ? "active" : ""}`}>
         <ul>
@@ -47,6 +47,17 @@ export default function Navbar() {
           <li>
             <a href="#contact" onClick={closeMenu}>
               Contact
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://drive.google.com/file/d/1y2arDo09fFiVRZcWvRQGvtE2ExbuW8ul/view?usp=drive_link"
+              className="cv-button"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeMenu}
+            >
+              Get CV
             </a>
           </li>
         </ul>

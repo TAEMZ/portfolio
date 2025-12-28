@@ -4,13 +4,14 @@
   position: relative;
   height: 100vh;
   padding: 0 20px;
-  background: linear-gradient(135deg, #0d1117, #0a0e13);
-  color: #ffffff;
+  background: transparent;
+  color: #e0f7fa;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Special Elite', cursive;
+  /* Match vintage style */
   text-align: center;
 }
 
@@ -22,21 +23,50 @@
 }
 
 .glow-text {
+  font-family: 'Special Elite', cursive;
   font-size: 3.5rem;
   line-height: 1.2;
   margin-bottom: 20px;
-  color: #00f0ff;
-  text-shadow: 0 0 6px #00f0ff, 0 0 12px #00bcd4;
-  animation: glowPulse 2.5s infinite ease-in-out;
+  color: #d4a373;
+  text-shadow: none;
+  animation: none;
+  font-weight: 700;
+  letter-spacing: -1px;
 }
 
 .subtitle {
   font-family: 'Poppins', sans-serif;
   font-size: 1.4rem;
-  color: #cfd8dc;
+  color: #90a4ae;
   margin-bottom: 25px;
   line-height: 1.6;
-  animation: fadeIn 2s ease;
+  min-height: 3.5rem;
+  /* Reserve space to prevent layout shift */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.4rem;
+  background-color: #d4a373;
+  /* Gold Leaf */
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 .tech-stack {
@@ -50,19 +80,22 @@
 .highlight {
   display: inline-block;
   padding: 8px 16px;
-  background: rgba(0, 240, 255, 0.1);
-  color: #00f0ff;
+  background: rgba(212, 163, 115, 0.1);
+  /* Gold Leaf tint */
+  color: #d4a373;
+  /* Gold Leaf */
   font-weight: 500;
-  border-radius: 20px;
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  backdrop-filter: blur(5px);
+  border-radius: 4px;
+  /* More rectangular vintage feel */
+  border: 1px solid rgba(212, 163, 115, 0.3);
   transition: all 0.3s ease;
+  font-family: 'Courier Prime', monospace;
 }
 
 .highlight:hover {
-  transform: translateY(-3px);
-  background: rgba(0, 240, 255, 0.2);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .hero-description {
@@ -84,32 +117,33 @@
 
 .cta-button {
   padding: 12px 30px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Special Elite', cursive;
   font-weight: 600;
-  border-radius: 30px;
-  background: linear-gradient(45deg, #00f0ff, #00bcd4);
+  border-radius: 4px;
+  background: #d4a373;
+  /* Gold Leaf */
   color: #0a0e13;
   text-decoration: none;
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+  box-shadow: none;
 }
 
 .cta-button.secondary {
   background: transparent;
-  color: #00f0ff;
-  border: 2px solid #00f0ff;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  color: #d4a373;
+  border: 1px solid #d4a373;
+  box-shadow: none;
 }
 
 .cta-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(212, 163, 115, 0.2);
 }
 
 .cta-button.secondary:hover {
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(212, 163, 115, 0.1);
 }
 
 .floating-elements {
@@ -120,15 +154,8 @@
 }
 
 .glow-ring {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  border: 3px solid #00f0ff;
-  border-radius: 50%;
-  box-shadow: 0 0 30px #00f0ff, 0 0 60px #00bcd4;
-  animation: rotateRing 15s linear infinite;
-  z-index: 1;
-  opacity: 0.15;
+  display: none;
+  /* Removed for a cleaner look */
 }
 
 .glow-ring.ring-2 {
@@ -142,7 +169,7 @@
 .code-snippet {
   position: absolute;
   font-family: 'Courier New', monospace;
-  color: rgba(0, 240, 255, 0.6);
+  color: rgba(212, 163, 115, 0.4);
   font-size: 0.9rem;
   animation: floatUp 10s infinite linear;
 }
@@ -163,7 +190,7 @@
   position: absolute;
   width: 60vmax;
   height: 60vmax;
-  background: radial-gradient(circle, #00f0ff44, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.02), transparent 70%);
   filter: blur(100px);
   z-index: 1;
   animation: floatBlob 12s infinite ease-in-out;
@@ -173,7 +200,7 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300f0ff' fill-opacity='0.1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4a373' fill-opacity='0.1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1.5'/%3E%3Ccircle cx='13' cy='13' r='1.5'/%3E%3C/g%3E%3C/svg%3E");
   z-index: 0;
 }
 
@@ -182,6 +209,7 @@
     opacity: 0;
     transform: translateY(40px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -192,30 +220,39 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
 @keyframes glowPulse {
-  0%, 100% {
-    text-shadow: 0 0 6px #00f0ff, 0 0 12px #00bcd4;
+
+  0%,
+  100% {
+    text-shadow: 0 0 4px rgba(212, 163, 115, 0.2);
   }
+
   50% {
-    text-shadow: 0 0 12px #00f0ff, 0 0 24px #00bcd4;
+    text-shadow: 0 0 8px rgba(212, 163, 115, 0.4);
   }
 }
 
 @keyframes floatBlob {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0);
   }
+
   25% {
     transform: translate(50px, 20px);
   }
+
   50% {
     transform: translate(0, 40px);
   }
+
   75% {
     transform: translate(-50px, 20px);
   }
@@ -225,6 +262,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -234,6 +272,7 @@
   from {
     transform: rotate(360deg);
   }
+
   to {
     transform: rotate(0deg);
   }
@@ -244,12 +283,15 @@
     transform: translateY(0) rotate(0deg);
     opacity: 0;
   }
+
   10% {
     opacity: 0.6;
   }
+
   90% {
     opacity: 0.6;
   }
+
   100% {
     transform: translateY(-100px) rotate(10deg);
     opacity: 0;

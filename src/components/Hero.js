@@ -1,14 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Hero.css";
 
 export default function Hero() {
+  const [text, setText] = useState("");
+  const fullText = "I am a creative software developer experienced in mobile and web apps across different stacks.";
+  const speed = 50;
+
+  useEffect(() => {
+    let i = 0;
+    const timer = setInterval(() => {
+      setText(fullText.slice(0, i));
+      i++;
+      if (i > fullText.length) clearInterval(timer);
+    }, speed);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section className="hero" id="hero">
       <div className="hero-content">
         <h1 className="glow-text">Hi, I'm Abiy 👋</h1>
         <p className="subtitle">
-          Creative Full-Stack Developer specializing in modern web & mobile
-          solutions
+          {text}
+          <span className="cursor">|</span>
         </p>
 
         <div className="tech-stack">
@@ -20,9 +34,7 @@ export default function Hero() {
         </div>
 
         <p className="hero-description">
-          I build performant, accessible digital experiences with clean code and
-          pixel-perfect designs. Currently crafting innovative solutions at the
-          intersection of technology and creativity.
+          I'm a full-stack developer who loves turning complex problems into simple, functional, and well-designed software. Whether it's a mobile app or a web platform, I focus on clean code and great user experiences.
         </p>
 
         <div className="hero-cta">

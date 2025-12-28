@@ -19,9 +19,10 @@ export default function About() {
       <h2 className="about-title">ABOUT ME</h2>
       <div className="about-card">
         <p className="about-text">
-          I'm a creative developer with skills to develop error free and
-          functional systems. I also enjoy building modern, and functional web
-          and mobile apps using cutting-edge technologies.
+          I build what I relate to—solving real problems I encounter daily. I
+          strive to master the entire ecosystem, orchestrating the invisible
+          data structures and network pathways to ensuring I truly command every
+          layer of what I create.
         </p>
 
         <div className="tech-stack">
