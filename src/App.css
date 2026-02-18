@@ -221,17 +221,17 @@ a:hover {
   /* Show the nail */
   filter: sepia(0.2) contrast(1.1);
   transform-origin: top center;
-  animation: windSway 5s ease-in-out infinite;
+  animation: windSway 8s ease-in-out infinite;
 }
 
 .vintage-card:nth-child(even) {
   animation-delay: -0.7s;
-  animation-duration: 6s;
+  animation-duration: 10s;
 }
 
 .vintage-card:nth-child(3n) {
   animation-delay: -1.5s;
-  animation-duration: 7s;
+  animation-duration: 12s;
 }
 
 /* Metallic Nail Head */
