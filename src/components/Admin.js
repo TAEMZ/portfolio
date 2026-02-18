@@ -53,6 +53,7 @@ export default function Admin() {
     useEffect(() => {
         checkUser();
         fetchAllData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     async function checkUser() {
