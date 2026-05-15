@@ -5,7 +5,7 @@ import { FaGithub, FaLinkedin } from "react-icons/fa";
 export default function Footer() {
   return (
     <footer className="footer" id="footer">
-      <p>© 2025 </p>
+      <p>© 2026 Abiy Kibru</p>
       <p>
         Contact: <a href="mailto:abiykibru6@gmail.com">abiykibru6@gmail.com</a>
       </p>
