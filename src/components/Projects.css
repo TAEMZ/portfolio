@@ -29,36 +29,19 @@
 }
 
 .project-tile {
-  background: #fdf5e6;
-  /* Old Lace / Paper color */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  background: linear-gradient(145deg, #161210 0%, #2a1b12 100%);
   padding: 35px;
-  border-radius: 2px;
+  border-radius: 6px;
   position: relative;
-  border: 1px solid #d2b48c;
-  box-shadow:
-    0 0 40px rgba(0, 0, 0, 0.2),
-    0 0 10px rgba(61, 43, 31, 0.4) inset;
-  /* Dirty inner glow */
+  border: 1px solid rgba(212, 163, 115, 0.2);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
   transition: all 0.4s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-/* Burned Edges Effect */
-.project-tile::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  border: 10px solid transparent;
-  box-shadow: 0 0 20px 5px rgba(61, 43, 31, 0.15) inset;
-  z-index: 1;
-}
+/* Simplified shadow on hover */
 
 .project-tile::after {
   content: "";
@@ -82,36 +65,33 @@
 .project-tile h3 {
   font-family: 'Special Elite', cursive;
   font-size: 1.4rem;
-  color: #3d2b1f;
+  color: #d4a373; /* Gold for headers */
   margin-bottom: 12px;
-  border-bottom: 1px solid rgba(61, 43, 31, 0.2);
+  border-bottom: 1px solid rgba(212, 163, 115, 0.2);
   padding-bottom: 5px;
 }
 
 .project-tile .stack {
   display: inline-block;
-  background: rgba(61, 43, 31, 0.05);
-  color: #3d2b1f;
-  /* Darker */
+  background: rgba(212, 163, 115, 0.1);
+  color: #d4a373;
   font-size: 0.85rem;
-  padding: 2px 8px;
-  border: 1px dashed rgba(61, 43, 31, 0.4);
+  padding: 2px 10px;
+  border: 1px solid rgba(212, 163, 115, 0.3);
+  border-radius: 4px;
   margin-bottom: 15px;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 700;
-  /* Bolder */
 }
 
 .project-tile .desc {
   font-size: 1rem;
-  color: #000000;
-  /* Pure Black */
-  line-height: 1.5;
+  color: #f1f1f1; /* White for description */
+  line-height: 1.6;
   margin-bottom: 25px;
   flex-grow: 1;
-  font-weight: 600;
-  /* Bolder */
+  font-weight: 400;
 }
 
 .project-links {

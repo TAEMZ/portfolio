@@ -28,8 +28,8 @@
 /* Happy/Excited */
 .happy .eyebrow.left { transform: rotate(-12deg) translateY(-2px); }
 .happy .eyebrow.right { transform: rotate(12deg) translateY(-2px); }
-.excited { transform: scale(1.1) translateY(-10px); }
-.excited .pet-container { animation: bounce 0.5s infinite alternate; }
+.excited { transform: scale(1.05) translateY(-5px); }
+.excited .pet-container { animation: bounce 0.8s ease-in-out infinite alternate; }
 .excited .eyebrow.left { transform: translateY(-4px) rotate(-15deg); }
 .excited .eyebrow.right { transform: translateY(-4px) rotate(15deg); }
 
@@ -47,11 +47,15 @@
 .sleepy { opacity: 0.6; filter: grayscale(0.5); }
 .sleepy .pet-container { animation: slow-float 4s infinite ease-in-out; }
 
+/* Sad (Mouse Leave) */
+.sad .eyebrow.left { transform: rotate(15deg) translateY(2px); }
+.sad .eyebrow.right { transform: rotate(-15deg) translateY(2px); }
+
 /* --- Animations --- */
 
 @keyframes bounce {
   from { transform: translateY(0); }
-  to { transform: translateY(-15px); }
+  to { transform: translateY(-6px); }
 }
 
 @keyframes jitter {
@@ -84,4 +88,45 @@
 @keyframes pulse {
   from { opacity: 0.2; }
   to { opacity: 0.5; }
+}
+
+.pet-speech-bubble {
+  position: absolute;
+  top: 5px;
+  left: 80px;
+  background: linear-gradient(135deg, #1a1412 0%, #2c1e13 100%);
+  color: #d4a373;
+  padding: 10px 18px;
+  border-radius: 15px 15px 15px 5px;
+  border: 1px solid rgba(212, 163, 115, 0.4);
+  font-family: 'Special Elite', cursive;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  z-index: 10002;
+  backdrop-filter: blur(5px);
+}
+
+.pet-speech-bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: -2px;
+  border-width: 10px 15px 0 0;
+  border-style: solid;
+  border-color: #2c1e13 transparent transparent transparent;
+  transform: rotate(-10deg);
+}
+
+@keyframes popIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.3) translate(-20px, 20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translate(0, 0); 
+  }
 }
