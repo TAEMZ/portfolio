@@ -1,38 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
 import { Link } from "react-router-dom";
 import "./Projects.css";
 import { FaGithub, FaPlus } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
 
+import { useQuery } from '@tanstack/react-query';
+
 export default function Projects() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: projects = [], isLoading } = useQuery({
+    queryKey: ['projects', 'featured'],
+    queryFn: async () => {
+      const response = await fetch("/api/get-data?table=projects");
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
 
-  useEffect(() => {
-    fetchProjects();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function fetchProjects() {
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("featured", true)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching projects:", error);
-      // Fallback: if 'featured' column error (missing), show all
-      const { data: allData } = await supabase.from("projects").select("*").order("created_at", { ascending: false });
-      setProjects(allData || []);
-    } else {
-      setProjects(data);
+      const featured = data.filter(p => p.featured === true);
+      return featured.length > 0 ? featured : data;
     }
-    setLoading(false);
-  }
+  });
 
-  if (loading) return <div className="projects-section">Loading...</div>;
+  if (isLoading) return <div className="projects-section">Loading...</div>;
 
   return (
     <section className="projects-section" id="projects">

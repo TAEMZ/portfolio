@@ -1,36 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
 import "./Skills.css";
 
+import { useQuery } from '@tanstack/react-query';
+
 export default function Skills() {
-  const [skills, setSkills] = useState({});
-  const [loading, setLoading] = useState(true);
+  const { data: skills = {}, isLoading } = useQuery({
+    queryKey: ['skills'],
+    queryFn: async () => {
+      const response = await fetch("/api/get-data?table=skills");
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
 
-  useEffect(() => {
-    fetchSkills();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function fetchSkills() {
-    const { data, error } = await supabase
-      .from("skills")
-      .select("*")
-      .order("created_at", { ascending: true });
-
-    if (error) {
-      console.error("Error fetching skills:", error);
-    } else {
-      // Group by category
-      const grouped = data.reduce((acc, curr) => {
+      return data.reduce((acc, curr) => {
         acc[curr.category] = curr.items;
         return acc;
       }, {});
-      setSkills(grouped);
     }
-    setLoading(false);
-  }
+  });
 
-  if (loading) return <div className="skills-section">Loading...</div>;
+  if (isLoading) return <div className="skills-section">Loading...</div>;
 
   return (
     <section className="skills-section" id="skills">

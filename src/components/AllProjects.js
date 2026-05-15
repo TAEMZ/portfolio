@@ -1,32 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
 import { Link } from "react-router-dom";
 import "./Projects.css";
 import { FaGithub, FaArrowLeft } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
 
-export default function AllProjects() {
-    const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
+import { useQuery } from '@tanstack/react-query';
 
+export default function AllProjects() {
     useEffect(() => {
-        fetchProjects();
         window.scrollTo(0, 0);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    async function fetchProjects() {
-        const { data, error } = await supabase
-            .from("projects")
-            .select("*")
-            .order("created_at", { ascending: false });
+    const { data: projects = [], isLoading } = useQuery({
+        queryKey: ['projects', 'all'],
+        queryFn: async () => {
+            const response = await fetch("/api/get-data?table=projects");
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            return data;
+        }
+    });
 
-        if (error) console.error("Error fetching projects:", error);
-        else setProjects(data);
-        setLoading(false);
-    }
-
-    if (loading) return <div className="projects-section" style={{ color: 'white', textAlign: 'center', padding: '100px' }}>Loading Gallery...</div>;
+    if (isLoading) return <div className="projects-section" style={{ color: 'white', textAlign: 'center', padding: '100px' }}>Loading Gallery...</div>;
 
     return (
         <section className="projects-section" id="all-projects">

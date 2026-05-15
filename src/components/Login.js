@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import "./Projects.css";
 
@@ -14,19 +13,22 @@ export default function Login() {
     const handleUnlock = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const { data, error } = await supabase
-            .from("secrets")
-            .select("value")
-            .eq("name", "admin_access_code")
-            .single();
+        try {
+            const response = await fetch("/api/auth?action=unlock", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ value: secretWord })
+            });
+            const data = await response.json();
 
-        if (error) {
+            if (data.success) {
+                setIsUnlocked(true);
+                sessionStorage.setItem("admin_unlocked", "true");
+            } else {
+                alert(data.error || "Incorrect access word.");
+            }
+        } catch (err) {
             alert("Security System Error. Please check database.");
-        } else if (data.value === secretWord) {
-            setIsUnlocked(true);
-            sessionStorage.setItem("admin_unlocked", "true");
-        } else {
-            alert("Incorrect access word.");
         }
         setLoading(false);
     };
@@ -34,15 +36,22 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        try {
+            const response = await fetch("/api/auth?action=login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
 
-        if (error) {
-            alert(error.message);
-        } else {
-            navigate("/admin");
+            if (data.success) {
+                sessionStorage.setItem("admin_logged_in", "true");
+                navigate("/admin");
+            } else {
+                alert(data.error || "Invalid credentials");
+            }
+        } catch (err) {
+            alert("Login failed. Please try again.");
         }
         setLoading(false);
     };

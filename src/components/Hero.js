@@ -3,8 +3,22 @@ import "./Hero.css";
 
 export default function Hero() {
   const [text, setText] = useState("");
+  const [isWaving, setIsWaving] = useState(true);
   const fullText = "I am a creative software developer experienced in mobile and web apps across different stacks.";
   const speed = 50;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setIsWaving(false);
+      } else {
+        setIsWaving(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     let i = 0;
@@ -19,7 +33,7 @@ export default function Hero() {
   return (
     <section className="hero" id="hero">
       <div className="hero-content">
-        <h1 className="glow-text">Hi, I'm Abiy 👋</h1>
+        <h1 className="glow-text">Hi, I'm Abiy <span className={isWaving ? "waving-hand" : ""}>👋</span></h1>
         <p className="subtitle">
           {text}
           <span className="cursor">|</span>

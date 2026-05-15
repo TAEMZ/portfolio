@@ -1,34 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
 import "./Experience.css";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
+import { useQuery } from '@tanstack/react-query';
+
 export default function Experience() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [experiences, setExperiences] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchExperiences();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function fetchExperiences() {
-    const { data, error } = await supabase
-      .from("experience")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) console.error("Error fetching experiences:", error);
-    else setExperiences(data);
-    setLoading(false);
-  }
+  const { data: experiences = [], isLoading } = useQuery({
+    queryKey: ['experience'],
+    queryFn: async () => {
+      const response = await fetch("/api/get-data?table=experience");
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      return data;
+    }
+  });
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
 
-  if (loading) return <div className="experience">Loading...</div>;
+  if (isLoading) return <div className="experience">Loading...</div>;
 
   return (
     <section className="experience" id="experience">

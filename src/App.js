@@ -10,6 +10,8 @@ import Footer from "./components/Footer";
 import Admin from "./components/Admin";
 import Login from "./components/Login";
 import AllProjects from "./components/AllProjects";
+import CursorTrail from "./components/CursorTrail";
+import PetCompanion from "./components/PetCompanion";
 
 import "./App.css";
 
@@ -28,6 +30,8 @@ const Portfolio = () => (
 export default function App() {
   return (
     <>
+      <CursorTrail />
+      <PetCompanion />
       <div className="tv-static"></div>
       <div className="scanlines"></div>
       <Routes>

@@ -1,0 +1,87 @@
+.pet-wrapper {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10001;
+  pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.pet-container {
+  filter: drop-shadow(0 0 10px rgba(212, 163, 115, 0.3));
+}
+
+.pet-body {
+  transition: all 0.3s ease;
+}
+
+.eyebrow {
+  transition: all 0.2s ease;
+  transform-box: fill-box;
+}
+
+.eyebrow.left { transform-origin: center; }
+.eyebrow.right { transform-origin: center; }
+
+/* --- Mood Expressions --- */
+
+/* Happy/Excited */
+.happy .eyebrow.left { transform: rotate(-12deg) translateY(-2px); }
+.happy .eyebrow.right { transform: rotate(12deg) translateY(-2px); }
+.excited { transform: scale(1.1) translateY(-10px); }
+.excited .pet-container { animation: bounce 0.5s infinite alternate; }
+.excited .eyebrow.left { transform: translateY(-4px) rotate(-15deg); }
+.excited .eyebrow.right { transform: translateY(-4px) rotate(15deg); }
+
+/* Curious (Scroll) */
+.curious { transform: translateY(15px) scale(0.95); }
+.curious .eyebrow.left { transform: translateY(2px) rotate(5deg); }
+.curious .eyebrow.right { transform: translateY(2px) rotate(-5deg); }
+
+/* Scared (Click) */
+.scared { animation: jitter 0.1s infinite; }
+.scared .eyebrow.left { transform: translateY(-5px) rotate(-20deg); }
+.scared .eyebrow.right { transform: translateY(-5px) rotate(20deg); }
+
+/* Sleepy (Inactivity) */
+.sleepy { opacity: 0.6; filter: grayscale(0.5); }
+.sleepy .pet-container { animation: slow-float 4s infinite ease-in-out; }
+
+/* --- Animations --- */
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-15px); }
+}
+
+@keyframes jitter {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  25% { transform: translate(-1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 1px) rotate(-1deg); }
+  75% { transform: translate(1px, -1px) rotate(0deg); }
+  100% { transform: translate(1px, 1px) rotate(0deg); }
+}
+
+@keyframes slow-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(15px); }
+}
+
+/* Floating animation for idle */
+.pet-wrapper:not(.scared):not(.excited) {
+  animation: float 4s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+.blush {
+  animation: pulse 2s infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.2; }
+  to { opacity: 0.5; }
+}

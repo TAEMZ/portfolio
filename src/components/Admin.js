@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import "./Projects.css";
@@ -57,17 +56,27 @@ export default function Admin() {
     }, []);
 
     async function checkUser() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) navigate("/login");
+        const isLoggedIn = sessionStorage.getItem("admin_logged_in") === "true";
+        if (!isLoggedIn) navigate("/login");
     }
 
     async function fetchAllData() {
         setLoading(true);
         try {
-            const { data: projects } = await supabase.from("projects").select("*").order("created_at", { ascending: false });
-            const { data: experience } = await supabase.from("experience").select("*").order("created_at", { ascending: false });
-            const { data: skills } = await supabase.from("skills").select("*").order("created_at", { ascending: true });
-            setData({ projects: projects || [], experience: experience || [], skills: skills || [] });
+            const pResp = await fetch("/api/get-data?table=projects");
+            const projects = await pResp.json();
+
+            const eResp = await fetch("/api/get-data?table=experience");
+            const experience = await eResp.json();
+
+            const sResp = await fetch("/api/get-data?table=skills");
+            const skills = await sResp.json();
+
+            setData({ 
+                projects: Array.isArray(projects) ? projects : [], 
+                experience: Array.isArray(experience) ? experience : [], 
+                skills: Array.isArray(skills) ? skills : [] 
+            });
         } catch (err) {
             console.error(err);
         }
@@ -75,54 +84,47 @@ export default function Admin() {
     }
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
+        sessionStorage.clear();
         navigate("/login");
     };
 
-    const migrateData = async () => {
-        setLoading(true);
-        try {
-            const pResp = await supabase.from("projects").insert(initialProjects);
-            if (pResp.error) throw pResp.error;
-
-            const eResp = await supabase.from("experience").insert(initialExperience);
-            if (eResp.error) throw eResp.error;
-
-            const sResp = await supabase.from("skills").insert(initialSkills);
-            if (sResp.error) throw sResp.error;
-
-            alert("Migration Successful!");
-            fetchAllData();
-        } catch (err) {
-            alert("Migration Failed: " + (err.message || JSON.stringify(err)));
-            console.error(err);
-        }
-        setLoading(false);
-    };
 
     // CRUD Actions
     async function saveItem(table, item) {
-        let error;
-        if (editingId) {
-            const { error: err } = await supabase.from(table).update(item).eq("id", editingId);
-            error = err;
-        } else {
-            const { error: err } = await supabase.from(table).insert([item]);
-            error = err;
-        }
+        try {
+            const url = editingId ? `/api/admin?table=${table}&id=${editingId}` : `/api/admin?table=${table}`;
+            const method = editingId ? "PUT" : "POST";
 
-        if (error) alert(error.message);
-        else {
+            const response = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(item)
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || "Failed to save");
+            }
+
             setEditingId(null);
             fetchAllData();
+        } catch (error) {
+            alert(error.message);
         }
     }
 
     async function deleteItem(table, id) {
         if (window.confirm("Are you sure you want to delete this?")) {
-            const { error } = await supabase.from(table).delete().eq("id", id);
-            if (error) alert(error.message);
-            else fetchAllData();
+            try {
+                const response = await fetch(`/api/admin?table=${table}&id=${id}`, {
+                    method: "DELETE"
+                });
+
+                if (!response.ok) throw new Error("Failed to delete");
+                fetchAllData();
+            } catch (error) {
+                alert(error.message);
+            }
         }
     }
 
@@ -157,12 +159,7 @@ export default function Admin() {
         <section className="projects-section admin-panel">
             <div className="section-header">
                 <h2 className="projects-title">Portfolio CMS</h2>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    {(data.projects.length === 0) && (
-                        <button onClick={migrateData} className="admin-btn" style={{ background: 'rgba(76, 175, 80, 0.1)', borderColor: '#4CAF50', color: '#4CAF50' }}>Migrate All Data</button>
-                    )}
                     <button onClick={handleLogout} className="admin-btn logout-btn">Logout</button>
-                </div>
             </div>
 
             <div className="tabs" style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
