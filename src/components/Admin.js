@@ -3,37 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import "./Projects.css";
 
-const initialProjects = [
-    { name: "Agentic Chat", stack: "React + Firebase + Vanilla CSS", description: "A feature-packed chat app acting as a real-time platform. Supports Video/Voice calls, File Sharing, and Secure Auth. Includes 'Theme Syncing' between users, a hidden gesture channel, collaborative sketching, and 'Sentiment UI' that changes colors based on message mood.", github: "https://github.com/TAEMZ/Agentic-Chat", demo: "https://chatapp-eight-rho.vercel.app/" },
-    { name: "Debug Partner", stack: "Python + Supabase + AI", description: "A chronological problem-solving assistant that suggests solutions at timed intervals (immediate to long-term), providing deeper insights as it 'thinks' for you over time.", github: "https://github.com/TAEMZ/Debug_partner" },
-    { name: "Star Wars Explorer", stack: "Flutter + Riverpod + GraphQL + Hive", description: "A feature-rich Star Wars app featuring a Galaxy Map, character connection Hub, and offline persistence. Built with modern state management and Graphql synchronization.", github: "https://github.com/TAEMZ/Star-Wars-Explore" },
-    { name: "Telegram Medical Advice Bot", stack: "Python + Flask + Addis Assistant AI", description: "AI-powered healthcare assistant supporting Amharic, Afaan Oromoo, and Tigrinya. Provides medical guidance using the Addis Assistant AI API.", github: "https://github.com/TAEMZ" },
-    { name: "GradGram – Web App", stack: "React + Firebase", description: "Social platform for graduating students to share memories, photos, and last words. Features Google Auth, Firestore, and department-based rooms.", github: "https://github.com/TAEMZ/grad_gram", demo: "https://grad-gram.vercel.app/" },
-    { name: "Habeshan Yelp– Flutter App", stack: "Flutter + Firebase + Maps", description: "A business finder app with live location, map integration, and user reviews. Realtime updates using Firebase and Google Maps.", github: "https://github.com/TAEMZ/Localbusiness" },
-    { name: "Music Player ", stack: "React", description: "A custom-designed audio player interface with playlist support and futuristic neon layout.", github: "https://github.com/TAEMZ/music_player" },
-    { name: "Quote generator", stack: "HTML,CSS ,JS", description: "Quote generator from famous movie lines and platform where users talk about their favorite movies.", github: "https://github.com/TAEMZ/Quote-Generator", demo: "https://quote-generator-beta-sepia.vercel.app/" },
-    { name: "Movie Repository", stack: "HTML + CSS + JS", description: "A static movie catalog website with card layout, search filtering, usind .", github: "https://github.com/TAEMZ/Movie-Repo", demo: "https://movie-repo-theta.vercel.app" },
-    { name: "Skill Snap", stack: "Flutter + Superbase", description: "is a peer-to-peer (P2P) skill-sharing platform that connectes individuals to exchange knowledge and abilities directly. Users can teach or learn various ", github: "https://github.com/TAEMZ/SkillSnap/tree/main/skill_snap" }
-];
-
-const initialExperience = [
-    { title: "Automated Telegram Services", tech: "n8n + Python (Backend)", period: "2024", details: ["Developed service-oriented Telegram bots orchestrated via n8n workflows.", "Integrated robust Python backends for complex data processing and logic.", "Streamlined user interactions for automated service delivery."] },
-    { title: "Corporate Web Solutions", tech: "Next.js + React + Modern UI", period: "2024", details: ["Designed and deployed high-performance portfolio websites for client companies.", "Built responsive, professional sites that align with corporate brand identities."] },
-    { title: "Automation & AI Workflows", tech: "n8n + Make.com + GraphQL", period: "2024 - Present", details: ["Built automated Facebook Ad account syncing for campaigns, adsets, and ads using GraphQL.", "Developed automated blog post generators and publishing flows via Make.com.", "Implemented various complex n8n workflows for data synchronization and AI assistant integration."] },
-    { title: "Hospital Management System", tech: "Java (Spring Boot)", period: "2023", details: ["Managed patients, pharmacy, and billing using java and MySQL.", "Included PDF exports, secure login, backups, and role-based access."] },
-    { title: "Store Inventory System", tech: "Java (Swing + MySQL)", period: "2023", details: ["Built a desktop inventory system with stock alerts and reports.", "product lookup and supplier tracking included."] },
-    { title: "Hotel Booking System", tech: "Java (Spring Boot)", period: "2024", details: ["Created booking portal with staff scheduling and payment simulation.", "Used layered MVC and database-driven design."] },
-    { title: "Academic Plagiarism Checker", tech: "n8n + Python (Flask) + Gemini AI", period: "2024", details: ["Automated plagiarism detection pipeline using n8n workflows and Python Flask microservices.", "Integrated Google Gemini AI for advanced semantic analysis and comparison.", "Utilized Supabase for real-time results tracking and data storage."] },
-    { title: "Freelance Mobile Engineer", tech: "Flutter + Firebase + Google Maps", period: "2024", details: ["Delivered scalable mobile solutions for local businesses, focusing on geolocation features.", "Implemented real-time backends and media storage using Firebase."] }
-];
-
-const initialSkills = [
-    { category: "Languages", items: ["Java", "JavaScript", "PHP", "Dart (Flutter)", "Python", "React", "Html", "Css"] },
-    { category: "Frameworks & Libraries", items: ["Spring Boot", "React", "Express.js"] },
-    { category: "Databases", items: ["Firebase", "PostgreSQL", "MySQL", "Superbase"] },
-    { category: "DevOps & Tools", items: ["Docker", "Git", "Postman"] },
-    { category: "Automation", items: ["n8n", "Make.com"] }
-];
 
 export default function Admin() {
     const [activeTab, setActiveTab] = useState("projects");

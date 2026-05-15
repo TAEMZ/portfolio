@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./Skills.css";
 
 import { useQuery } from '@tanstack/react-query';
