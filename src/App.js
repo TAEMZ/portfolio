@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
@@ -12,7 +12,6 @@ import Login from "./components/Login";
 import AllProjects from "./components/AllProjects";
 import CursorTrail from "./components/CursorTrail";
 import PetCompanion from "./components/PetCompanion";
-import { AnswerEdge } from './answeredgeClient';
 
 import "./App.css";
 
@@ -29,16 +28,6 @@ const Portfolio = () => (
 );
 
 export default function App() {
-  const location = useLocation();
-
-  useEffect(() => {
-    // Track page views with AnswerEdge
-    AnswerEdge.track({
-      userAgent: navigator.userAgent,
-      path: location.pathname
-    });
-  }, [location]);
-
   return (
     <>
       <CursorTrail />
