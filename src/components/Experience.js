@@ -3,7 +3,6 @@ import "./Experience.css";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 import { useQuery } from '@tanstack/react-query';
-import { answeredge } from '../answeredgeClient';
 
 export default function Experience() {
   const [isCollapsed, setIsCollapsed] = useState(false);

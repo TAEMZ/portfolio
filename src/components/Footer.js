@@ -1,7 +1,6 @@
 import React from "react";
 import "./Footer.css";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
-import { answeredge } from '../answeredgeClient';
 
 export default function Footer() {
   return (

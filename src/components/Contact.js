@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./Contact.css";
 import { FaEnvelope, FaPaperPlane } from "react-icons/fa";
-import { answeredge } from '../answeredgeClient';
 
 export default function Contact() {
     const [formData, setFormData] = useState({ name: "", email: "", message: "" });

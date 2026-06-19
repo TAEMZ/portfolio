@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './PetCompanion.css';
-import { answeredge } from '../answeredgeClient';
 
 const PetCompanion = () => {
   const [mood, setMood] = useState('idle'); 

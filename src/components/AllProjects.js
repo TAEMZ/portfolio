@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import "./Projects.css";
 import { FaGithub, FaArrowLeft } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
 
 import { useQuery } from '@tanstack/react-query';
-import { answeredge } from '../answeredgeClient';
 
 export default function AllProjects() {
     useEffect(() => {

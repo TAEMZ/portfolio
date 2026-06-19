@@ -2,7 +2,6 @@ import React from "react";
 import "./Skills.css";
 
 import { useQuery } from '@tanstack/react-query';
-import { answeredge } from '../answeredgeClient';
 
 export default function Skills() {
   const { data: skills = {}, isLoading } = useQuery({
