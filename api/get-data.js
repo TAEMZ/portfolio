@@ -1,6 +1,6 @@
-const { Client } = require('pg');
+import { Client } from 'pg';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
     const { table } = req.query;
     
     if (!['projects', 'experience', 'skills'].includes(table)) {
@@ -21,4 +21,4 @@ module.exports = async function handler(req, res) {
     } finally {
         await client.end();
     }
-};
+}

@@ -3,14 +3,7 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["api/**"]
-      }
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static",
+      "use": "@vercel/static-build",
       "config": {
         "distDir": "build"
       }

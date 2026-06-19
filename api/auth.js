@@ -1,6 +1,6 @@
-const { Client } = require('pg');
+import { Client } from 'pg';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
     const { action } = req.query;
     const { value, email, password } = req.body;
 
@@ -29,8 +29,6 @@ module.exports = async function handler(req, res) {
             const dbPass = passRes.rows[0]?.value;
 
             if (dbEmail === email && dbPass === password) {
-                // In a real app, you'd set a cookie or JWT here.
-                // For this portfolio, we'll return success and the frontend will manage state.
                 return res.status(200).json({ success: true });
             }
             return res.status(401).json({ error: 'Invalid email or password' });
@@ -44,4 +42,4 @@ module.exports = async function handler(req, res) {
     } finally {
         await client.end();
     }
-};
+}
