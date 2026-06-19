@@ -1,6 +1,6 @@
-import { Client } from 'pg';
+const { Client } = require('pg');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     const { table, id } = req.query;
     const { method, body } = req;
 
@@ -51,4 +51,4 @@ export default async function handler(req, res) {
     } finally {
         await client.end();
     }
-}
+};
