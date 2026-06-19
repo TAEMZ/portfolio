@@ -5,6 +5,7 @@ import { FaGithub, FaArrowLeft } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
 
 import { useQuery } from '@tanstack/react-query';
+import { answeredge } from '../answeredgeClient';
 
 export default function AllProjects() {
     useEffect(() => {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Navbar.css";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { answeredge } from '../answeredgeClient';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);

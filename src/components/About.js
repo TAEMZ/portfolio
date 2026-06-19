@@ -2,6 +2,7 @@ import React from "react";
 import "./About.css";
 import { FaJava, FaReact, FaNodeJs } from "react-icons/fa";
 import { SiFlutter, SiFirebase, SiPython, SiDart } from "react-icons/si";
+import { answeredge } from '../answeredgeClient';
 
 export default function About() {
   const technologies = [

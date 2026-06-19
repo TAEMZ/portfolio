@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Hero.css";
+import { answeredge } from '../answeredgeClient';
 
 export default function Hero() {
   const [text, setText] = useState("");
