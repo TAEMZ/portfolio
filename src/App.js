@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -12,6 +12,7 @@ import Login from "./components/Login";
 import AllProjects from "./components/AllProjects";
 import CursorTrail from "./components/CursorTrail";
 import PetCompanion from "./components/PetCompanion";
+import { answeredge } from './answeredgeClient';
 
 import "./App.css";
 
@@ -28,6 +29,13 @@ const Portfolio = () => (
 );
 
 export default function App() {
+  useEffect(() => {
+    // Initialize AnswerEdge tracking on app load
+    if (answeredge) {
+      console.log('AnswerEdge SDK initialized');
+    }
+  }, []);
+
   return (
     <>
       <CursorTrail />
