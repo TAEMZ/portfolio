@@ -1,12 +1,18 @@
-import AnswerEdge from '@answeredge/sdk';
+import { AnswerEdge } from '@answeredge/sdk';
 
 const apiKey = process.env.REACT_APP_ANSWEREDGE_API_KEY;
 
 if (!apiKey) {
-    console.error(
+    console.warn(
         "AnswerEdge API key is missing! " +
         "Please add REACT_APP_ANSWEREDGE_API_KEY to your .env file and restart the dev server."
     );
 }
 
-export const answeredge = new AnswerEdge(apiKey || "placeholder-api-key");
+// Initialize the singleton
+AnswerEdge.init({
+    apiKey: apiKey || "placeholder-api-key",
+    endpoint: "https://eight-brave-soviet-principle.trycloudflare.com"
+});
+
+export { AnswerEdge };
