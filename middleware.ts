@@ -3,7 +3,7 @@ import { AnswerEdge } from "@answeredge/sdk";
 
 AnswerEdge.init({
   apiKey: process.env.ANSWEREDGE_API_KEY,
-  endpoint: "https://eight-brave-soviet-principle.trycloudflare.com",
+  endpoint: "https://notes-ranking-acquire-particle.trycloudflare.com",
 });
 
 export default async function middleware(request: Request) {

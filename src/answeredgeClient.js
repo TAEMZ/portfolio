@@ -1,4 +1,4 @@
-import { AnswerEdge } from '@answeredge/sdk';
+import AnswerEdge from '@answeredge/sdk';
 
 const apiKey = process.env.REACT_APP_ANSWEREDGE_API_KEY;
 
@@ -12,7 +12,7 @@ if (!apiKey) {
 // Initialize the singleton
 AnswerEdge.init({
     apiKey: apiKey || "placeholder-api-key",
-    endpoint: "https://eight-brave-soviet-principle.trycloudflare.com"
+    endpoint: "https://notes-ranking-acquire-particle.trycloudflare.com"
 });
 
 export { AnswerEdge };
