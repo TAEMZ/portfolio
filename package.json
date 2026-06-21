@@ -4,7 +4,7 @@
   "private": true,
   "proxy": "http://localhost:3006",
   "dependencies": {
-    "@answeredge/sdk": "^0.1.2",
+    "@answeredge/sdk": "^0.1.4",
     "@emailjs/browser": "^4.4.1",
     "@supabase/supabase-js": "^2.96.0",
     "@tanstack/react-query": "^5.0.0",
