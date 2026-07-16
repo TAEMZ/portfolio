@@ -97,9 +97,29 @@ export default function Admin() {
         }
     }
 
+    async function updateProjectStatus(id, status) {
+        try {
+            const response = await fetch(`/api/admin?table=projects&id=${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status })
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || "Failed to update status");
+            }
+
+            fetchAllData();
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
     const startEdit = (tab, item) => {
         setEditingId(item.id);
         if (tab === "projects") {
+            setActiveTab("projects"); // Switch to projects tab to see the form
             setProjectForm({
                 name: item.name,
                 stack: item.stack,
@@ -133,6 +153,7 @@ export default function Admin() {
 
             <div className="tabs" style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
                 <button onClick={() => { setActiveTab("projects"); cancelEdit(); }} className={`admin-btn ${activeTab === "projects" ? "active" : ""}`}>Projects</button>
+                <button onClick={() => { setActiveTab("pending"); cancelEdit(); }} className={`admin-btn ${activeTab === "pending" ? "active" : ""}`}>Pending ({(data.projects || []).filter(p => p.status === 'draft').length})</button>
                 <button onClick={() => { setActiveTab("experience"); cancelEdit(); }} className={`admin-btn ${activeTab === "experience" ? "active" : ""}`}>Experience</button>
                 <button onClick={() => { setActiveTab("skills"); cancelEdit(); }} className={`admin-btn ${activeTab === "skills" ? "active" : ""}`}>Skills</button>
             </div>
@@ -141,7 +162,7 @@ export default function Admin() {
                 <div className="tab-content">
                     <div className="admin-card" style={{ marginBottom: '40px' }}>
                         <h3>{editingId ? "Edit Project" : "Add Project"}</h3>
-                        <form onSubmit={(e) => { e.preventDefault(); saveItem("projects", projectForm); setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false }); }} className="contact-form">
+                        <form onSubmit={(e) => { e.preventDefault(); saveItem("projects", { ...projectForm, status: 'published' }); setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false }); }} className="contact-form">
                             <div className="premium-input-group">
                                 <input type="text" placeholder="Project Name" value={projectForm.name} onChange={e => setProjectForm({ ...projectForm, name: e.target.value })} required />
                             </div>
@@ -175,7 +196,7 @@ export default function Admin() {
                         </form>
                     </div>
                     <div className="projects-canvas">
-                        {data.projects.map(p => (
+                        {(data.projects || []).filter(p => p.status === 'published' || !p.status).map(p => (
                             <div className="admin-card" key={p.id}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                     <h3>{p.name}</h3>
@@ -188,6 +209,36 @@ export default function Admin() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+            )}
+
+            {activeTab === "pending" && (
+                <div className="tab-content">
+                    <div className="projects-canvas">
+                        {(data.projects || []).filter(p => p.status === 'draft').map(p => (
+                            <div className="admin-card" key={p.id} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <h3>{p.name}</h3>
+                                    <span style={{ background: '#d4a373', color: '#0a0e13', padding: '2px 8px', fontSize: '0.7rem', borderRadius: '4px', fontWeight: 'bold' }}>DRAFT</span>
+                                </div>
+                                <span className="stack">{p.stack}</span>
+                                <p style={{ color: '#a0a0a0', fontSize: '0.9rem' }}>{p.description}</p>
+                                {p.ai_reason && (
+                                    <div style={{ background: 'rgba(212, 163, 115, 0.1)', borderLeft: '3px solid #d4a373', padding: '10px', fontSize: '0.8rem', color: '#d4a373', marginTop: '10px', fontStyle: 'italic' }}>
+                                        <strong>AI Reason:</strong> {p.ai_reason}
+                                    </div>
+                                )}
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                                    <button onClick={() => updateProjectStatus(p.id, 'published')} className="admin-btn active" style={{ padding: '6px 15px', fontSize: '0.8rem' }}>Publish</button>
+                                    <button onClick={() => startEdit("projects", p)} className="admin-btn" style={{ padding: '6px 15px', fontSize: '0.8rem' }}>Edit & Publish</button>
+                                    <button onClick={() => updateProjectStatus(p.id, 'rejected')} className="admin-btn logout-btn" style={{ padding: '6px 15px', fontSize: '0.8rem', background: '#e07a5f' }}>Reject</button>
+                                </div>
+                            </div>
+                        ))}
+                        {(data.projects || []).filter(p => p.status === 'draft').length === 0 && (
+                            <div style={{ color: 'white', textAlign: 'center', width: '100%', padding: '40px', fontFamily: 'Courier Prime, monospace' }}>No pending draft projects found.</div>
+                        )}
                     </div>
                 </div>
             )}

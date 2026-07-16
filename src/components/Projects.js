@@ -14,8 +14,10 @@ export default function Projects() {
       const data = await response.json();
       if (data.error) throw new Error(data.error);
 
-      const featured = data.filter(p => p.featured === true);
-      return featured.length > 0 ? featured : data;
+      // Only display published projects (or ones with no status field)
+      const published = data.filter(p => p.status === 'published' || !p.status);
+      const featured = published.filter(p => p.featured === true);
+      return featured.length > 0 ? featured : published;
     }
   });
 

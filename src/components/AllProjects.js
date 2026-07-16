@@ -17,7 +17,8 @@ export default function AllProjects() {
             const response = await fetch("/api/get-data?table=projects");
             const data = await response.json();
             if (data.error) throw new Error(data.error);
-            return data;
+            // Only display published projects (or ones with no status field)
+            return data.filter(p => p.status === 'published' || !p.status);
         }
     });
 
