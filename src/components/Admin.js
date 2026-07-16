@@ -18,6 +18,10 @@ export default function Admin() {
     // Editing State
     const [editingId, setEditingId] = useState(null);
 
+    // AI Chat Modifier States
+    const [chatInputs, setChatInputs] = useState({});
+    const [chatLoading, setChatLoading] = useState({});
+
     useEffect(() => {
         checkUser();
         fetchAllData();
@@ -97,7 +101,7 @@ export default function Admin() {
         }
     }
 
-    async function updateProjectStatus(id, status) {
+    async function updateProjectStatus(id, status, projectData) {
         try {
             const response = await fetch(`/api/admin?table=projects&id=${id}`, {
                 method: "PUT",
@@ -110,9 +114,56 @@ export default function Admin() {
                 throw new Error(err.error || "Failed to update status");
             }
 
+            // If we are publishing, also trigger the local resume updater
+            if (status === 'published' && projectData) {
+                console.log("Triggering local resume updater...");
+                try {
+                    const localResponse = await fetch("http://localhost:3000/trigger-resume-update", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            name: projectData.name,
+                            stack: projectData.stack,
+                            description: projectData.description
+                        })
+                    });
+                    if (localResponse.ok) {
+                        console.log("Local resume updated successfully.");
+                    } else {
+                        console.warn("Local resume server not reachable.");
+                    }
+                } catch (localErr) {
+                    console.warn("Could not connect to local resume-updater server on http://localhost:3000. It is likely not running.");
+                }
+            }
+
             fetchAllData();
         } catch (error) {
             alert(error.message);
+        }
+    }
+
+    async function handleChatModify(id, instruction) {
+        if (!instruction.trim()) return;
+        setChatLoading(prev => ({ ...prev, [id]: true }));
+        try {
+            const response = await fetch('/api/modify-project', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, instruction })
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || 'Failed to modify project.');
+            }
+
+            fetchAllData();
+            setChatInputs(prev => ({ ...prev, [id]: '' }));
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            setChatLoading(prev => ({ ...prev, [id]: false }));
         }
     }
 
@@ -146,9 +197,20 @@ export default function Admin() {
 
     return (
         <section className="projects-section admin-panel">
-            <div className="section-header">
+            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2 className="projects-title">Portfolio CMS</h2>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <a 
+                        href="http://localhost:3000/download-resume" 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="admin-btn active"
+                        style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', background: '#d4a373', color: '#0a0e13', fontWeight: 'bold' }}
+                    >
+                        Download Resume (DOCX)
+                    </a>
                     <button onClick={handleLogout} className="admin-btn logout-btn">Logout</button>
+                </div>
             </div>
 
             <div className="tabs" style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
@@ -229,8 +291,30 @@ export default function Admin() {
                                         <strong>AI Reason:</strong> {p.ai_reason}
                                     </div>
                                 )}
-                                <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-                                    <button onClick={() => updateProjectStatus(p.id, 'published')} className="admin-btn active" style={{ padding: '6px 15px', fontSize: '0.8rem' }}>Publish</button>
+                                
+                                <div style={{ marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '15px' }}>
+                                    <label style={{ fontSize: '0.8rem', color: '#a0a0a0', display: 'block', marginBottom: '8px', fontFamily: 'Courier Prime, monospace' }}>Ask AI to Modify Project Details:</label>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <input 
+                                            type="text" 
+                                            placeholder="e.g. shorten description, change tech stack to Next.js"
+                                            value={chatInputs[p.id] || ""}
+                                            onChange={e => setChatInputs({ ...chatInputs, [p.id]: e.target.value })}
+                                            style={{ flex: 1, padding: '8px 12px', fontSize: '0.85rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: 'white' }}
+                                        />
+                                        <button 
+                                            onClick={() => handleChatModify(p.id, chatInputs[p.id])} 
+                                            disabled={chatLoading[p.id] || !chatInputs[p.id]}
+                                            className="admin-btn active" 
+                                            style={{ padding: '8px 20px', fontSize: '0.8rem' }}
+                                        >
+                                            {chatLoading[p.id] ? "Updating..." : "Send"}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '15px' }}>
+                                    <button onClick={() => updateProjectStatus(p.id, 'published', p)} className="admin-btn active" style={{ padding: '6px 15px', fontSize: '0.8rem' }}>Publish</button>
                                     <button onClick={() => startEdit("projects", p)} className="admin-btn" style={{ padding: '6px 15px', fontSize: '0.8rem' }}>Edit & Publish</button>
                                     <button onClick={() => updateProjectStatus(p.id, 'rejected')} className="admin-btn logout-btn" style={{ padding: '6px 15px', fontSize: '0.8rem', background: '#e07a5f' }}>Reject</button>
                                 </div>
