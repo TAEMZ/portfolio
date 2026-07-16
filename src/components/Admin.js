@@ -101,7 +101,7 @@ export default function Admin() {
         }
     }
 
-    async function updateProjectStatus(id, status, projectData) {
+    async function updateProjectStatus(id, status) {
         try {
             const response = await fetch(`/api/admin?table=projects&id=${id}`, {
                 method: "PUT",
@@ -112,29 +112,6 @@ export default function Admin() {
             if (!response.ok) {
                 const err = await response.json();
                 throw new Error(err.error || "Failed to update status");
-            }
-
-            // If we are publishing, also trigger the local resume updater
-            if (status === 'published' && projectData) {
-                console.log("Triggering local resume updater...");
-                try {
-                    const localResponse = await fetch("http://localhost:3000/trigger-resume-update", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            name: projectData.name,
-                            stack: projectData.stack,
-                            description: projectData.description
-                        })
-                    });
-                    if (localResponse.ok) {
-                        console.log("Local resume updated successfully.");
-                    } else {
-                        console.warn("Local resume server not reachable.");
-                    }
-                } catch (localErr) {
-                    console.warn("Could not connect to local resume-updater server on http://localhost:3000. It is likely not running.");
-                }
             }
 
             fetchAllData();
@@ -201,7 +178,7 @@ export default function Admin() {
                 <h2 className="projects-title">Portfolio CMS</h2>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <a 
-                        href="http://localhost:3000/download-resume" 
+                        href="/api/download-resume" 
                         target="_blank"
                         rel="noopener noreferrer"
                         className="admin-btn active"
@@ -314,7 +291,7 @@ export default function Admin() {
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '10px', marginTop: '15px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '15px' }}>
-                                    <button onClick={() => updateProjectStatus(p.id, 'published', p)} className="admin-btn active" style={{ padding: '6px 15px', fontSize: '0.8rem' }}>Publish</button>
+                                    <button onClick={() => updateProjectStatus(p.id, 'published')} className="admin-btn active" style={{ padding: '6px 15px', fontSize: '0.8rem' }}>Publish</button>
                                     <button onClick={() => startEdit("projects", p)} className="admin-btn" style={{ padding: '6px 15px', fontSize: '0.8rem' }}>Edit & Publish</button>
                                     <button onClick={() => updateProjectStatus(p.id, 'rejected')} className="admin-btn logout-btn" style={{ padding: '6px 15px', fontSize: '0.8rem', background: '#e07a5f' }}>Reject</button>
                                 </div>
