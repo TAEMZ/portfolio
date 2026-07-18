@@ -8,12 +8,16 @@ AnswerEdge.init({
 });
 
 module.exports = async function handler(req, res) {
-    // Track this API request
-    await AnswerEdge.trackNow({
-        userAgent: req.headers['user-agent'],
-        path: req.url,
-        ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress
-    });
+    // Track this API request (fail-safe)
+    try {
+        await AnswerEdge.trackNow({
+            userAgent: req.headers['user-agent'],
+            path: req.url,
+            ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress
+        });
+    } catch (trackError) {
+        console.warn("AnswerEdge tracking failed:", trackError.message);
+    }
     const { table, id } = req.query;
     const { method, body } = req;
 
