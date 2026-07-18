@@ -1,22 +1,36 @@
 const { Client } = require('pg');
-const { AnswerEdge } = require('@answeredge/sdk');
 
-// Initialize AnswerEdge
-AnswerEdge.init({
-    apiKey: process.env.ANSWEREDGE_API_KEY,
-    endpoint: "https://eight-brave-soviet-principle.trycloudflare.com",
-});
+let AnswerEdge = null;
+try {
+    AnswerEdge = require('@answeredge/sdk').AnswerEdge;
+} catch (e) {
+    console.warn("Failed to import @answeredge/sdk:", e.message);
+}
+
+if (AnswerEdge) {
+    try {
+        AnswerEdge.init({
+            apiKey: process.env.ANSWEREDGE_API_KEY,
+            endpoint: "https://eight-brave-soviet-principle.trycloudflare.com",
+        });
+    } catch (err) {
+        console.warn("Failed to initialize AnswerEdge:", err.message);
+        AnswerEdge = null; // Disable tracking if initialization fails
+    }
+}
 
 module.exports = async function handler(req, res) {
     // Track this API request (fail-safe)
-    try {
-        await AnswerEdge.trackNow({
-            userAgent: req.headers['user-agent'],
-            path: req.url,
-            ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress
-        });
-    } catch (trackError) {
-        console.warn("AnswerEdge tracking failed:", trackError.message);
+    if (AnswerEdge) {
+        try {
+            await AnswerEdge.trackNow({
+                userAgent: req.headers['user-agent'],
+                path: req.url,
+                ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress
+            });
+        } catch (trackError) {
+            console.warn("AnswerEdge tracking failed:", trackError.message);
+        }
     }
     const { table, id } = req.query;
     const { method, body } = req;
