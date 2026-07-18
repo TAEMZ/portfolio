@@ -193,11 +193,21 @@ export default function Admin() {
             { name: "CineVault", stack: "React", description: "Community movie discovery hub – user-submitted summaries, cast info, quote generation." }
         ];
 
+        const cleanBaseName = (name) => {
+            const parts = (name || '').split(/[–\-:|]/);
+            let base = parts[0];
+            base = base.replace(/\bnpm package\b/gi, '');
+            base = base.replace(/\bweb app\b/gi, '');
+            base = base.replace(/\bflutter app\b/gi, '');
+            return base.trim();
+        };
+
         const normalize = (str) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
         const baselineNames = [
             "agenticchat", "debugpartner", "gradgram", "agentmonitor",
             "agentguard", "mcptestkit", "difftest", "starwarsexplorer",
-            "moviequotegenerator", "webmusicplayer", "movierepository", "cinevault"
+            "moviequotegenerator", "webmusicplayer", "movierepository", "cinevault",
+            "chessarena", "skillsnap", "habeshanyelp", "telegramsavedmessagesbot", "telegrammedicaladvicebot"
         ];
 
         // Fetch published database projects (excluding drafts/rejected ones)
@@ -205,7 +215,8 @@ export default function Admin() {
 
         // Balance the new database projects dynamically
         dbPublished.forEach(proj => {
-            const normName = normalize(proj.name);
+            const baseName = cleanBaseName(proj.name);
+            const normName = normalize(baseName);
             if (baselineNames.includes(normName)) return; // Skip duplicates already in the template
 
             // Count paragraphs in columns (Project: 3 paras, Header: 1 para)

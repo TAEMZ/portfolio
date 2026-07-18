@@ -55,11 +55,21 @@ module.exports = async function handler(req, res) {
     let xmlContent = zip.file('word/document.xml').asText();
 
     // 3. Process each published project
+    const cleanBaseName = (name) => {
+      const parts = (name || '').split(/[–\-:|]/);
+      let base = parts[0];
+      base = base.replace(/\bnpm package\b/gi, '');
+      base = base.replace(/\bweb app\b/gi, '');
+      base = base.replace(/\bflutter app\b/gi, '');
+      return base.trim();
+    };
+
     const normalizeText = (str) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     const normalizedDocText = xmlContent.replace(/<[^>]+>/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
     for (const project of projects) {
-      const normalizedProjectName = normalizeText(project.name);
+      const baseName = cleanBaseName(project.name);
+      const normalizedProjectName = normalizeText(baseName);
       if (normalizedDocText.includes(normalizedProjectName)) {
         // Project already exists in the baseline resume, skip duplication
         continue;
