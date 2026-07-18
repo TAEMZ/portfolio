@@ -15,7 +15,7 @@ async function callGroq(messages) {
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
       messages,
-      temperature: 0.1,
+      temperature: 0.3,
       response_format: { type: 'json_object' }
     }),
   });
@@ -35,10 +35,11 @@ module.exports = async function handler(req, res) {
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  const { id, instruction } = req.body;
+  const { id, instruction, message } = req.body;
+  const userMessage = instruction || message;
 
-  if (!id || !instruction) {
-    return res.status(400).json({ error: 'Missing id or instruction in request body.' });
+  if (!id || !userMessage) {
+    return res.status(400).json({ error: 'Missing id or message in request body.' });
   }
 
   const client = new Client({
@@ -48,7 +49,7 @@ module.exports = async function handler(req, res) {
   try {
     await client.connect();
 
-    // Fetch the current project
+    // 1. Fetch current project
     const selectRes = await client.query('SELECT * FROM projects WHERE id = $1', [id]);
     if (selectRes.rows.length === 0) {
       await client.end();
@@ -57,43 +58,57 @@ module.exports = async function handler(req, res) {
 
     const project = selectRes.rows[0];
 
-    // Call Groq to rewrite details
-    const messages = [
-      {
-        role: 'system',
-        content: `You are an expert resume and portfolio editor. Modify the project details based on the user's instructions. 
+    // 2. Parse and update chat history
+    let chatHistory = [];
+    if (project.chat_history) {
+      chatHistory = typeof project.chat_history === 'string' 
+        ? JSON.parse(project.chat_history) 
+        : project.chat_history;
+    }
+    
+    // Add user's new message to the history
+    chatHistory.push({ role: 'user', content: userMessage });
+
+    // 3. Build messages array for Groq with system instructions
+    const systemPrompt = {
+      role: 'system',
+      content: `You are an expert resume and portfolio editor. The user is reviewing a project draft in their CMS.
+Your goal is to help them refine the project title, tech stack, and description through a conversational chat thread.
+
+Current Draft Details:
+- Title: ${project.name}
+- Tech Stack: ${project.stack}
+- Description: ${project.description}
+
 You must respond with a JSON object containing:
 - "title" (string): The updated or refined project name.
-- "tech" (string): The updated or refined technology stack (delimited by " · ", e.g. "React · TypeScript · Node.js").
+- "tech" (string): The updated or refined tech stack (delimited by " · ", e.g. "React · TypeScript · Node.js").
 - "description" (string): The updated or refined 1-2 sentence description.
+- "reply" (string): A brief, helpful reply to the user explaining your changes in a friendly, conversational manner.
 
-Keep the tone professional, results-oriented, and concise. Do not add any extra commentary or wrap outside of the JSON schema.`
-      },
-      {
-        role: 'user',
-        content: `Current Project Details:
-Title: ${project.name}
-Tech Stack: ${project.stack}
-Description: ${project.description}
+Keep the tone professional, results-oriented, and concise. Do not add any extra commentary outside of the JSON schema.`
+    };
 
-User Editing Instruction: ${instruction}`
-      }
-    ];
+    const messagesForGroq = [systemPrompt, ...chatHistory];
 
-    console.log(`Calling Groq to modify project ${id} with instruction: "${instruction}"`);
-    const modifiedDetails = await callGroq(messages);
+    console.log(`Calling Groq to chat for project ${id} with message: "${userMessage}"`);
+    const modifiedDetails = await callGroq(messagesForGroq);
 
-    // Save modified details back to Postgres as draft
+    // 4. Append assistant's response to history
+    chatHistory.push({ role: 'assistant', content: modifiedDetails.reply });
+
+    // 5. Update Postgres row with new details and history
     const updateQuery = `
       UPDATE projects 
-      SET name = $1, stack = $2, description = $3, created_at = NOW()
-      WHERE id = $4
+      SET name = $1, stack = $2, description = $3, chat_history = $4, created_at = NOW()
+      WHERE id = $5
       RETURNING *
     `;
     const updateRes = await client.query(updateQuery, [
       modifiedDetails.title,
       modifiedDetails.tech,
       modifiedDetails.description,
+      JSON.stringify(chatHistory),
       id
     ]);
 
@@ -101,7 +116,7 @@ User Editing Instruction: ${instruction}`
 
     return res.status(200).json({
       success: true,
-      message: 'Project successfully updated by Groq.',
+      message: 'Project updated and chat message added.',
       project: updateRes.rows[0]
     });
 

@@ -55,7 +55,15 @@ module.exports = async function handler(req, res) {
     let xmlContent = zip.file('word/document.xml').asText();
 
     // 3. Process each published project
+    const normalizeText = (str) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const normalizedDocText = xmlContent.replace(/<[^>]+>/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
     for (const project of projects) {
+      const normalizedProjectName = normalizeText(project.name);
+      if (normalizedDocText.includes(normalizedProjectName)) {
+        // Project already exists in the baseline resume, skip duplication
+        continue;
+      }
       // Split the document XML into cell components
       const cells = xmlContent.split('</w:tc>');
       if (cells.length < 3) {

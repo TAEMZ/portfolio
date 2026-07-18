@@ -51,7 +51,7 @@ export default function Navbar() {
           </li>
           <li>
             <a
-              href="https://drive.google.com/file/d/1y2arDo09fFiVRZcWvRQGvtE2ExbuW8ul/view?usp=drive_link"
+              href="/api/download-resume"
               className="cv-button"
               target="_blank"
               rel="noopener noreferrer"
