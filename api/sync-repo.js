@@ -113,6 +113,29 @@ module.exports = async function handler(req, res) {
     console.log(`Processing repo sync for: ${repoUrl}`);
     const repoData = await getRepoData(repoUrl);
 
+    // Save draft to Postgres DB
+    const client = new Client({
+      connectionString: process.env.POSTGRES_URL,
+    });
+    await client.connect();
+
+    // Check if repo already exists in DB
+    const checkRes = await client.query('SELECT * FROM projects WHERE github_repo = $1', [repoData.fullName]);
+    
+    if (checkRes.rows.length > 0) {
+      const existingProject = checkRes.rows[0];
+      // Update repo_pushed_at timestamp, but do NOT modify details or status
+      await client.query('UPDATE projects SET repo_pushed_at = NOW() WHERE id = $1', [existingProject.id]);
+      await client.end();
+
+      console.log(`Project already exists for ${repoData.fullName}. Leaving title and description untouched.`);
+      return res.status(200).json({
+        success: true,
+        message: 'Project already exists in database. Title and description left untouched.',
+        project: existingProject
+      });
+    }
+
     // Groq call #1: The Judge
     const judgePrompt = [
       {
@@ -139,6 +162,7 @@ ${repoData.readmeText}`,
     const judgeResult = await callGroq(judgePrompt);
 
     if (!judgeResult.is_project) {
+      await client.end();
       return res.status(200).json({
         success: false,
         status: 'rejected',
@@ -167,61 +191,30 @@ ${repoData.readmeText}`,
 
     const projectDetails = await callGroq(writerPrompt);
 
-    // Save draft to Postgres DB
-    const client = new Client({
-      connectionString: process.env.POSTGRES_URL,
-    });
-    await client.connect();
-
-    // Check if repo already exists in DB to prevent duplicate rows
-    const checkRes = await client.query('SELECT id FROM projects WHERE github_repo = $1', [repoData.fullName]);
-    
-    let resultRow;
-    if (checkRes.rows.length > 0) {
-      // Update existing draft
-      const updateQuery = `
-        UPDATE projects 
-        SET name = $1, stack = $2, description = $3, github = $4, status = $5, ai_reason = $6, created_at = NOW()
-        WHERE id = $7
-        RETURNING *
-      `;
-      const updateRes = await client.query(updateQuery, [
-        projectDetails.title,
-        projectDetails.tech,
-        projectDetails.description,
-        repoData.githubUrl,
-        'draft', // reset to draft for review
-        judgeResult.reason,
-        checkRes.rows[0].id
-      ]);
-      resultRow = updateRes.rows[0];
-      console.log(`Updated existing project draft in database for ${repoData.fullName}`);
-    } else {
-      // Insert new draft
-      const insertQuery = `
-        INSERT INTO projects (name, stack, description, github, status, ai_reason, github_repo, featured, created_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
-        RETURNING *
-      `;
-      const insertRes = await client.query(insertQuery, [
-        projectDetails.title,
-        projectDetails.tech,
-        projectDetails.description,
-        repoData.githubUrl,
-        'draft',
-        judgeResult.reason,
-        repoData.fullName,
-        false
-      ]);
-      resultRow = insertRes.rows[0];
-      console.log(`Created new project draft in database for ${repoData.fullName}`);
-    }
+    // Insert new draft
+    const insertQuery = `
+      INSERT INTO projects (name, stack, description, github, status, ai_reason, github_repo, featured, created_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+      RETURNING *
+    `;
+    const insertRes = await client.query(insertQuery, [
+      projectDetails.title,
+      projectDetails.tech,
+      projectDetails.description,
+      repoData.githubUrl,
+      'draft',
+      judgeResult.reason,
+      repoData.fullName,
+      false
+    ]);
+    const resultRow = insertRes.rows[0];
     
     await client.end();
+    console.log(`Created new project draft in database for ${repoData.fullName}`);
 
     return res.status(200).json({
       success: true,
-      message: 'Draft project successfully added/updated in portfolio database.',
+      message: 'Draft project successfully added in portfolio database.',
       project: resultRow
     });
 
