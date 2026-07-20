@@ -30,9 +30,19 @@ module.exports = async function handler(req, res) {
 
     const dbRepoNames = new Set(dbRes.rows.map(row => row.github_repo.toLowerCase()));
 
-    // 3. Find repos on GitHub that are not in the database and are not forks
+    // 3. Find repos on GitHub that:
+    //    - Are not forks
+    //    - Do not already exist in the database
+    //    - Have been active/pushed to within the last 3 days (to prevent importing old history and saving tokens)
+    const thresholdTime = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000); // 3 days ago
+
     const newRepos = githubRepos
-      .filter(repo => !repo.fork && !dbRepoNames.has(repo.full_name.toLowerCase()))
+      .filter(repo => {
+        const isNotFork = !repo.fork;
+        const notInDb = !dbRepoNames.has(repo.full_name.toLowerCase());
+        const pushedRecently = new Date(repo.pushed_at) > thresholdTime;
+        return isNotFork && notInDb && pushedRecently;
+      })
       .map(repo => repo.html_url);
 
     return res.status(200).json({
