@@ -20,10 +20,12 @@ export default function Admin() {
     // AI Chat Modifier States
     const [chatInputs, setChatInputs] = useState({});
     const [chatLoading, setChatLoading] = useState({});
+    const [syncStatus, setSyncStatus] = useState("");
 
     useEffect(() => {
         checkUser();
         fetchAllData();
+        scanAndSyncRepos();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -32,8 +34,46 @@ export default function Admin() {
         if (!isLoggedIn) navigate("/login");
     }
 
-    async function fetchAllData() {
-        setLoading(true);
+    async function scanAndSyncRepos() {
+        try {
+            setSyncStatus("Scanning GitHub for new projects...");
+            const response = await fetch("/api/sync-all-repos");
+            if (!response.ok) throw new Error("Scan failed");
+            const resData = await response.json();
+            
+            if (resData.new_repos && resData.new_repos.length > 0) {
+                console.log(`Found ${resData.new_repos.length} new repositories. Syncing...`);
+                for (let i = 0; i < resData.new_repos.length; i++) {
+                    const repoUrl = resData.new_repos[i];
+                    const repoName = repoUrl.split("/").pop();
+                    setSyncStatus(`Syncing new project ${i + 1} of ${resData.new_repos.length}: ${repoName}...`);
+                    
+                    const syncResponse = await fetch("/api/sync-repo", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ repo_url: repoUrl })
+                    });
+                    
+                    if (syncResponse.ok) {
+                        console.log(`Successfully synced ${repoName}`);
+                    } else {
+                        console.error(`Failed to sync ${repoName}`);
+                    }
+                }
+                setSyncStatus("All projects synced!");
+                setTimeout(() => setSyncStatus(""), 3000);
+                fetchAllData(false);
+            } else {
+                setSyncStatus("");
+            }
+        } catch (error) {
+            console.error("Auto sync error:", error);
+            setSyncStatus("");
+        }
+    }
+
+    async function fetchAllData(showSpinner = true) {
+        if (showSpinner) setLoading(true);
         try {
             const pResp = await fetch("/api/get-data?table=projects");
             const projects = await pResp.json();
@@ -52,7 +92,7 @@ export default function Admin() {
         } catch (err) {
             console.error(err);
         }
-        setLoading(false);
+        if (showSpinner) setLoading(false);
     }
 
     const handleLogout = async () => {
@@ -265,6 +305,38 @@ export default function Admin() {
                     <button onClick={handleLogout} className="admin-btn logout-btn">Logout</button>
                 </div>
             </div>
+
+            {syncStatus && (
+                <div style={{
+                    background: 'rgba(212, 163, 115, 0.05)',
+                    border: '1px solid rgba(212, 163, 115, 0.2)',
+                    color: '#d4a373',
+                    padding: '12px 18px',
+                    borderRadius: '6px',
+                    marginBottom: '25px',
+                    fontSize: '0.85rem',
+                    fontFamily: 'Courier Prime, monospace',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                }}>
+                    <style>{`
+                        @keyframes sync-spin {
+                            to { transform: rotate(360deg); }
+                        }
+                    `}</style>
+                    <div style={{
+                        width: '14px',
+                        height: '14px',
+                        borderRadius: '50%',
+                        border: '2px solid #d4a373',
+                        borderTopColor: 'transparent',
+                        animation: 'sync-spin 0.8s linear infinite',
+                        flexShrink: 0
+                    }}></div>
+                    <span>{syncStatus}</span>
+                </div>
+            )}
 
             <div className="tabs" style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
                 <button onClick={() => { setActiveTab("projects"); cancelEdit(); }} className={`admin-btn ${activeTab === "projects" ? "active" : ""}`}>Projects</button>
