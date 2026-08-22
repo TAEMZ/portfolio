@@ -11,7 +11,6 @@ import {
     FaPlus, 
     FaImage, 
     FaStar, 
-    FaCheck, 
     FaExternalLinkAlt 
 } from "react-icons/fa";
 import "./Projects.css";

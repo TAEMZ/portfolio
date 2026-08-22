@@ -38,7 +38,7 @@ export default function Experience() {
   // Helper to split tech stack into clean individual badges
   const techList = activeExp?.tech
     ? activeExp.tech
-        .split(/[\+\,·\•]/)
+        .split(/[+,·•]/)
         .map(t => t.trim())
         .filter(Boolean)
     : [];
