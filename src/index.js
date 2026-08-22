@@ -6,18 +6,41 @@ import reportWebVitals from './reportWebVitals';
 
 import { BrowserRouter } from 'react-router-dom';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Data considered fresh for 5 minutes — no refetch while tab is open
+      staleTime: 1000 * 60 * 5,
+      // Keep unused cache for 24 hours (persisted to localStorage)
+      gcTime: 1000 * 60 * 60 * 24,
+    },
+  },
+});
+
+// Persist the query cache to localStorage so data loads instantly on refresh
+const persister = createSyncStoragePersister({
+  storage: window.localStorage,
+  key: 'portfolio-query-cache',
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister,
+        maxAge: 1000 * 60 * 60 * 24, // cache valid for 24 hours
+      }}
+    >
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   </React.StrictMode>
 );
 

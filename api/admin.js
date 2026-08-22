@@ -1,19 +1,33 @@
 const { Client } = require('pg');
-const { AnswerEdge } = require('@answeredge/sdk');
 
-// Initialize AnswerEdge
-AnswerEdge.init({
-    apiKey: process.env.ANSWEREDGE_API_KEY,
-    endpoint: "https://eight-brave-soviet-principle.trycloudflare.com",
-});
+let AnswerEdge = null;
+(async () => {
+    try {
+        const mod = await import('@answeredge/sdk');
+        AnswerEdge = mod.AnswerEdge;
+        if (AnswerEdge && process.env.ANSWEREDGE_API_KEY) {
+            AnswerEdge.init({
+                apiKey: process.env.ANSWEREDGE_API_KEY,
+                endpoint: "https://eight-brave-soviet-principle.trycloudflare.com",
+            });
+        }
+    } catch (e) {
+        // SDK not loaded or in CommonJS mode
+    }
+})();
 
 module.exports = async function handler(req, res) {
-    // Track this API request
-    await AnswerEdge.trackNow({
-        userAgent: req.headers['user-agent'],
-        path: req.url,
-        ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress
-    });
+    // Track this API request if AnswerEdge is available
+    if (AnswerEdge && AnswerEdge.trackNow) {
+        try {
+            await AnswerEdge.trackNow({
+                userAgent: req.headers['user-agent'],
+                path: req.url,
+                ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress
+            });
+        } catch (e) {}
+    }
+
     const { table, id } = req.query;
     const { method, body } = req;
 

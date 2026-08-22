@@ -1,9 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Navbar.css";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaFileAlt } from "react-icons/fa";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 40) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -14,8 +27,18 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar" id="navbar">
-      <div className="logo"></div>
+    <nav className={`navbar ${isScrolled ? "scrolled" : ""}`} id="navbar">
+      <a
+        href="https://drive.google.com/file/d/1dgqHmqHNXRVbsfTXJ_NIyXHeoYUR67wH/view?usp=drive_link"
+        className="cv-button navbar-cv-brand"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={closeMenu}
+        title="Open Abiy's Resume / CV"
+      >
+        <FaFileAlt style={{ fontSize: '0.85rem' }} />
+        <span>Get CV</span>
+      </a>
 
       <div className={`nav-links ${isOpen ? "active" : ""}`}>
         <ul>
@@ -45,25 +68,14 @@ export default function Navbar() {
             </a>
           </li>
           <li>
-            <a href="#contact" onClick={closeMenu}>
+            <a href="#footer" onClick={closeMenu}>
               Contact
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://drive.google.com/file/d/1y2arDo09fFiVRZcWvRQGvtE2ExbuW8ul/view?usp=drive_link"
-              className="cv-button"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={closeMenu}
-            >
-              Get CV
             </a>
           </li>
         </ul>
       </div>
 
-      <div className="hamburger" onClick={toggleMenu}>
+      <div className="hamburger" onClick={toggleMenu} aria-label="Toggle navigation menu">
         {isOpen ? <FaTimes /> : <FaBars />}
       </div>
     </nav>

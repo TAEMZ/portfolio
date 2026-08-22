@@ -3,7 +3,7 @@ import { AnswerEdge } from "@answeredge/sdk";
 
 AnswerEdge.init({
   apiKey: process.env.ANSWEREDGE_API_KEY,
-  endpoint: "http://152.53.250.85:7400",
+  endpoint: "https://notes-ranking-acquire-particle.trycloudflare.com",
 });
 
 export default async function middleware(request: Request) {

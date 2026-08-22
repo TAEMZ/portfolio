@@ -1,17 +1,20 @@
 import React from "react";
 import "./About.css";
 import { FaJava, FaReact, FaNodeJs } from "react-icons/fa";
-import { SiFlutter, SiFirebase, SiPython, SiDart } from "react-icons/si";
+import { SiFlutter, SiFirebase, SiPython, SiNextdotjs, SiSupabase, SiDocker, SiCpanel } from "react-icons/si";
 
 export default function About() {
   const technologies = [
+    { icon: <SiNextdotjs size={24} />, name: "Next.js" },
+    { icon: <FaNodeJs size={24} />, name: "Node.js" },
+    { icon: <SiFirebase size={24} />, name: "Firebase" },
+    { icon: <SiSupabase size={24} />, name: "Supabase" },
     { icon: <FaJava size={24} />, name: "Java" },
     { icon: <FaReact size={24} />, name: "React" },
-    { icon: <SiFlutter size={24} />, name: "Flutter" },
-    { icon: <SiFirebase size={24} />, name: "Firebase" },
-    { icon: <FaNodeJs size={24} />, name: "Node.js" },
     { icon: <SiPython size={24} />, name: "Python" },
-    { icon: <SiDart size={24} />, name: "Dart" },
+    { icon: <SiFlutter size={24} />, name: "Flutter" },
+    { icon: <SiDocker size={24} />, name: "Docker" },
+    { icon: <SiCpanel size={24} />, name: "cPanel" },
   ];
 
   return (

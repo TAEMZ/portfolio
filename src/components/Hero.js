@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Hero.css";
+import heroFace from "../assets/hero_face.png";
 
 export default function Hero() {
   const [text, setText] = useState("");
@@ -32,32 +33,41 @@ export default function Hero() {
 
   return (
     <section className="hero" id="hero">
-      <div className="hero-content">
-        <h1 className="glow-text">Hi, I'm Abiy <span className={isWaving ? "waving-hand" : ""}>👋</span></h1>
-        <p className="subtitle">
-          {text}
-          <span className="cursor">|</span>
-        </p>
+      <div className="hero-container">
+        <div className="hero-content">
+          <h1 className="glow-text">Hi, I'm Abiy <span className={isWaving ? "waving-hand" : ""}>👋</span></h1>
+          <p className="hero-subtitle">
+            {text}
+            <span className="cursor">|</span>
+          </p>
 
-        <div className="tech-stack">
-          <span className="highlight">React</span>
-          <span className="highlight">Flutter</span>
-          <span className="highlight">Firebase</span>
-          <span className="highlight">Node.js</span>
-          <span className="highlight">UI/UX</span>
+          <div className="hero-tech-stack">
+            <span className="highlight">React</span>
+            <span className="highlight">Flutter</span>
+            <span className="highlight">Firebase</span>
+            <span className="highlight">Node.js</span>
+            <span className="highlight">UI/UX</span>
+          </div>
+
+          <p className="hero-description">
+            I'm a full-stack developer who loves turning complex problems into simple, functional, and well-designed software. Whether it's a mobile app or a web platform, I focus on clean code and great user experiences.
+          </p>
+
+          <div className="hero-cta">
+            <a href="#projects" className="cta-button">
+              View My Work
+            </a>
+            <a href="#footer" className="cta-button secondary">
+              Contact Me
+            </a>
+          </div>
         </div>
 
-        <p className="hero-description">
-          I'm a full-stack developer who loves turning complex problems into simple, functional, and well-designed software. Whether it's a mobile app or a web platform, I focus on clean code and great user experiences.
-        </p>
-
-        <div className="hero-cta">
-          <a href="#projects" className="cta-button">
-            View My Work
-          </a>
-          <a href="#footer" className="cta-button secondary">
-            Contact Me
-          </a>
+        <div className="hero-visual">
+          <div className="hero-face-wrapper">
+            <img src={heroFace} alt="Abiy Matrix Portrait" className="hero-face-img" />
+            <div className="hero-face-glow"></div>
+          </div>
         </div>
       </div>
 
