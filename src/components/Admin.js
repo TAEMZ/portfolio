@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { 
-    FaEdit, 
-    FaTrash, 
-    FaCloudUploadAlt, 
-    FaSyncAlt, 
-    FaArrowLeft, 
-    FaArrowRight, 
-    FaTimes, 
-    FaPlus, 
-    FaImage, 
-    FaStar, 
-    FaExternalLinkAlt 
+import {
+    FaEdit,
+    FaTrash,
+    FaCloudUploadAlt,
+    FaSyncAlt,
+    FaArrowLeft,
+    FaArrowRight,
+    FaTimes,
+    FaPlus,
+    FaImage,
+    FaStar,
+    FaExternalLinkAlt
 } from "react-icons/fa";
 import "./Projects.css";
 
@@ -30,14 +30,14 @@ export default function Admin() {
     const navigate = useNavigate();
 
     // Form States
-    const [projectForm, setProjectForm] = useState({ 
-        name: "", 
-        stack: "", 
-        description: "", 
-        github: "", 
-        demo: "", 
+    const [projectForm, setProjectForm] = useState({
+        name: "",
+        stack: "",
+        description: "",
+        github: "",
+        demo: "",
         featured: false,
-        images: [] 
+        images: []
     });
     const [expForm, setExpForm] = useState({ title: "", tech: "", period: "", details: "" });
     const [skillForm, setSkillForm] = useState({ category: "", items: "" });
@@ -68,10 +68,10 @@ export default function Admin() {
             const sResp = await fetch("/api/get-data?table=skills");
             const skills = await sResp.json();
 
-            setData({ 
-                projects: Array.isArray(projects) ? projects : [], 
-                experience: Array.isArray(experience) ? experience : [], 
-                skills: Array.isArray(skills) ? skills : [] 
+            setData({
+                projects: Array.isArray(projects) ? projects : [],
+                experience: Array.isArray(experience) ? experience : [],
+                skills: Array.isArray(skills) ? skills : []
             });
         } catch (err) {
             console.error(err);
@@ -232,15 +232,15 @@ export default function Admin() {
             });
             window.scrollTo({ top: 120, behavior: 'smooth' });
         } else if (tab === "experience") {
-            setExpForm({ 
-                title: item.title || "", 
-                tech: item.tech || "", 
-                period: item.period || "", 
+            setExpForm({
+                title: item.title || "",
+                tech: item.tech || "",
+                period: item.period || "",
                 details: Array.isArray(item.details) ? item.details.join("\n") : (item.details || "")
             });
         } else if (tab === "skills") {
-            setSkillForm({ 
-                category: item.category || "", 
+            setSkillForm({
+                category: item.category || "",
                 items: Array.isArray(item.items) ? item.items.join(", ") : (item.items || "")
             });
         }
@@ -273,10 +273,10 @@ export default function Admin() {
             </div>
 
             {syncMessage && (
-                <div style={{ 
-                    padding: '12px 20px', 
-                    borderRadius: '8px', 
-                    marginBottom: '20px', 
+                <div style={{
+                    padding: '12px 20px',
+                    borderRadius: '8px',
+                    marginBottom: '20px',
                     backgroundColor: syncMessage.includes('❌') ? 'rgba(239, 68, 68, 0.2)' : 'rgba(34, 197, 94, 0.2)',
                     border: `1px solid ${syncMessage.includes('❌') ? '#ef4444' : '#22c55e'}`,
                     color: '#fff',
@@ -312,21 +312,21 @@ export default function Admin() {
                             )}
                         </div>
 
-                        <form onSubmit={(e) => { 
-                            e.preventDefault(); 
-                            saveItem("projects", projectForm); 
-                            setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false, images: [] }); 
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            saveItem("projects", projectForm);
+                            setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false, images: [] });
                         }} className="contact-form">
                             <div className="premium-input-group">
                                 <label style={{ display: 'block', color: '#d4a373', fontSize: '0.85rem', marginBottom: '4px' }}>Project Name *</label>
                                 <input type="text" placeholder="e.g. SkillSnap – Flutter App" value={projectForm.name} onChange={e => setProjectForm({ ...projectForm, name: e.target.value })} required />
                             </div>
-                            
+
                             <div className="premium-input-group">
                                 <label style={{ display: 'block', color: '#d4a373', fontSize: '0.85rem', marginBottom: '4px' }}>Tech Stack</label>
                                 <input type="text" placeholder="e.g. Flutter · Dart · Firebase" value={projectForm.stack} onChange={e => setProjectForm({ ...projectForm, stack: e.target.value })} />
                             </div>
-                            
+
                             <div className="premium-input-group">
                                 <label style={{ display: 'block', color: '#d4a373', fontSize: '0.85rem', marginBottom: '4px' }}>Description *</label>
                                 <textarea placeholder="Describe the key features, architecture, and problem solved..." value={projectForm.description} onChange={e => setProjectForm({ ...projectForm, description: e.target.value })} required rows="4" />
@@ -344,12 +344,12 @@ export default function Admin() {
                             </div>
 
                             {/* Multiple Images Management Section */}
-                            <div style={{ 
-                                margin: '20px 0', 
-                                padding: '20px', 
-                                background: 'rgba(0, 0, 0, 0.4)', 
-                                border: '1px dashed rgba(212, 163, 115, 0.4)', 
-                                borderRadius: '10px' 
+                            <div style={{
+                                margin: '20px 0',
+                                padding: '20px',
+                                background: 'rgba(0, 0, 0, 0.4)',
+                                border: '1px dashed rgba(212, 163, 115, 0.4)',
+                                borderRadius: '10px'
                             }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                                     <label style={{ color: '#d4a373', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1rem' }}>
@@ -362,52 +362,52 @@ export default function Admin() {
 
                                 {/* Upload & URL inputs */}
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '15px' }}>
-                                    <input 
-                                        type="file" 
+                                    <input
+                                        type="file"
                                         ref={fileInputRef}
-                                        multiple 
-                                        accept="image/*" 
-                                        onChange={handleImageUpload} 
-                                        style={{ display: 'none' }} 
+                                        multiple
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        style={{ display: 'none' }}
                                         id="cloudinary-upload-input"
                                     />
-                                    <label 
-                                        htmlFor="cloudinary-upload-input" 
+                                    <label
+                                        htmlFor="cloudinary-upload-input"
                                         className="admin-btn"
-                                        style={{ 
-                                            cursor: uploadingImages ? 'not-allowed' : 'pointer', 
-                                            display: 'inline-flex', 
-                                            alignItems: 'center', 
-                                            gap: '8px', 
-                                            background: '#3b82f6', 
+                                        style={{
+                                            cursor: uploadingImages ? 'not-allowed' : 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            background: '#3b82f6',
                                             borderColor: '#2563eb',
                                             margin: 0
                                         }}
                                     >
-                                        <FaCloudUploadAlt style={{ fontSize: '1.2rem' }} /> 
+                                        <FaCloudUploadAlt style={{ fontSize: '1.2rem' }} />
                                         {uploadingImages ? "Uploading to Cloudinary..." : "Upload Images"}
                                     </label>
 
                                     <div style={{ display: 'flex', flex: 1, minWidth: '260px', gap: '8px' }}>
-                                        <input 
-                                            type="url" 
-                                            placeholder="Paste direct Image / Screenshot URL..." 
-                                            value={imageUrlInput} 
+                                        <input
+                                            type="url"
+                                            placeholder="Paste direct Image / Screenshot URL..."
+                                            value={imageUrlInput}
                                             onChange={e => setImageUrlInput(e.target.value)}
                                             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addImageUrl(); } }}
-                                            style={{ 
-                                                flex: 1, 
-                                                padding: '10px 14px', 
-                                                background: 'rgba(255,255,255,0.05)', 
-                                                border: '1px solid rgba(255,255,255,0.15)', 
-                                                borderRadius: '6px', 
+                                            style={{
+                                                flex: 1,
+                                                padding: '10px 14px',
+                                                background: 'rgba(255,255,255,0.05)',
+                                                border: '1px solid rgba(255,255,255,0.15)',
+                                                borderRadius: '6px',
                                                 color: '#fff',
                                                 fontSize: '0.9rem'
                                             }}
                                         />
-                                        <button 
-                                            type="button" 
-                                            onClick={addImageUrl} 
+                                        <button
+                                            type="button"
+                                            onClick={addImageUrl}
                                             className="admin-btn"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', margin: 0 }}
                                         >
@@ -418,9 +418,9 @@ export default function Admin() {
 
                                 {/* Images Preview Grid */}
                                 {projectForm.images && projectForm.images.length > 0 ? (
-                                    <div style={{ 
-                                        display: 'grid', 
-                                        gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', 
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
                                         gap: '12px',
                                         maxHeight: '340px',
                                         overflowY: 'auto',
@@ -429,12 +429,12 @@ export default function Admin() {
                                         borderRadius: '8px'
                                     }}>
                                         {projectForm.images.map((imgUrl, idx) => (
-                                            <div 
-                                                key={idx} 
-                                                style={{ 
-                                                    position: 'relative', 
-                                                    borderRadius: '6px', 
-                                                    overflow: 'hidden', 
+                                            <div
+                                                key={idx}
+                                                style={{
+                                                    position: 'relative',
+                                                    borderRadius: '6px',
+                                                    overflow: 'hidden',
                                                     border: idx === 0 ? '2px solid #d4a373' : '1px solid rgba(255,255,255,0.15)',
                                                     background: '#0a0e13',
                                                     aspectRatio: '16/10',
@@ -443,24 +443,24 @@ export default function Admin() {
                                                     justifyContent: 'space-between'
                                                 }}
                                             >
-                                                <img 
-                                                    src={imgUrl} 
-                                                    alt={`Preview ${idx + 1}`} 
+                                                <img
+                                                    src={imgUrl}
+                                                    alt={`Preview ${idx + 1}`}
                                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                     onError={(e) => { e.target.src = 'https://via.placeholder.com/200x120?text=Invalid+Image'; }}
                                                 />
 
                                                 {/* Cover Badge */}
                                                 {idx === 0 && (
-                                                    <span style={{ 
-                                                        position: 'absolute', 
-                                                        top: '4px', 
-                                                        left: '4px', 
-                                                        background: '#d4a373', 
-                                                        color: '#000', 
-                                                        fontSize: '0.65rem', 
-                                                        fontWeight: 'bold', 
-                                                        padding: '1px 5px', 
+                                                    <span style={{
+                                                        position: 'absolute',
+                                                        top: '4px',
+                                                        left: '4px',
+                                                        background: '#d4a373',
+                                                        color: '#000',
+                                                        fontSize: '0.65rem',
+                                                        fontWeight: 'bold',
+                                                        padding: '1px 5px',
                                                         borderRadius: '3px',
                                                         display: 'flex',
                                                         alignItems: 'center',
@@ -471,34 +471,34 @@ export default function Admin() {
                                                 )}
 
                                                 {/* Index Badge */}
-                                                <span style={{ 
-                                                    position: 'absolute', 
-                                                    bottom: '4px', 
-                                                    left: '4px', 
-                                                    background: 'rgba(0,0,0,0.7)', 
-                                                    color: '#fff', 
-                                                    fontSize: '0.65rem', 
-                                                    padding: '1px 4px', 
-                                                    borderRadius: '3px' 
+                                                <span style={{
+                                                    position: 'absolute',
+                                                    bottom: '4px',
+                                                    left: '4px',
+                                                    background: 'rgba(0,0,0,0.7)',
+                                                    color: '#fff',
+                                                    fontSize: '0.65rem',
+                                                    padding: '1px 4px',
+                                                    borderRadius: '3px'
                                                 }}>
                                                     #{idx + 1}
                                                 </span>
 
                                                 {/* Actions Overlay */}
-                                                <div style={{ 
-                                                    position: 'absolute', 
-                                                    top: '4px', 
-                                                    right: '4px', 
-                                                    display: 'flex', 
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    top: '4px',
+                                                    right: '4px',
+                                                    display: 'flex',
                                                     gap: '4px',
                                                     background: 'rgba(0,0,0,0.7)',
                                                     padding: '2px',
                                                     borderRadius: '4px'
                                                 }}>
                                                     {idx > 0 && (
-                                                        <button 
-                                                            type="button" 
-                                                            onClick={() => setAsCover(idx)} 
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setAsCover(idx)}
                                                             title="Set as Cover"
                                                             style={{ background: 'transparent', border: 'none', color: '#d4a373', cursor: 'pointer', padding: '2px' }}
                                                         >
@@ -506,9 +506,9 @@ export default function Admin() {
                                                         </button>
                                                     )}
                                                     {idx > 0 && (
-                                                        <button 
-                                                            type="button" 
-                                                            onClick={() => moveImage(idx, idx - 1)} 
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => moveImage(idx, idx - 1)}
                                                             title="Move Left"
                                                             style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', padding: '2px' }}
                                                         >
@@ -516,18 +516,18 @@ export default function Admin() {
                                                         </button>
                                                     )}
                                                     {idx < projectForm.images.length - 1 && (
-                                                        <button 
-                                                            type="button" 
-                                                            onClick={() => moveImage(idx, idx + 1)} 
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => moveImage(idx, idx + 1)}
                                                             title="Move Right"
                                                             style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', padding: '2px' }}
                                                         >
                                                             <FaArrowRight style={{ fontSize: '0.75rem' }} />
                                                         </button>
                                                     )}
-                                                    <button 
-                                                        type="button" 
-                                                        onClick={() => removeImage(idx)} 
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeImage(idx)}
                                                         title="Delete Image"
                                                         style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '2px' }}
                                                     >
@@ -582,19 +582,19 @@ export default function Admin() {
                                         {/* Card Header & Thumbnail */}
                                         {images.length > 0 ? (
                                             <div style={{ position: 'relative', height: '140px', borderRadius: '6px', overflow: 'hidden', marginBottom: '12px', background: '#0a0e13' }}>
-                                                <img 
-                                                    src={images[0]} 
-                                                    alt={p.name} 
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                                <img
+                                                    src={images[0]}
+                                                    alt={p.name}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                 />
-                                                <span style={{ 
-                                                    position: 'absolute', 
-                                                    bottom: '6px', 
-                                                    right: '6px', 
-                                                    background: 'rgba(0,0,0,0.75)', 
-                                                    color: '#fff', 
-                                                    padding: '2px 8px', 
-                                                    borderRadius: '4px', 
+                                                <span style={{
+                                                    position: 'absolute',
+                                                    bottom: '6px',
+                                                    right: '6px',
+                                                    background: 'rgba(0,0,0,0.75)',
+                                                    color: '#fff',
+                                                    padding: '2px 8px',
+                                                    borderRadius: '4px',
                                                     fontSize: '0.75rem',
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -604,15 +604,15 @@ export default function Admin() {
                                                 </span>
                                             </div>
                                         ) : (
-                                            <div style={{ 
-                                                height: '80px', 
-                                                borderRadius: '6px', 
-                                                background: 'rgba(255,255,255,0.03)', 
-                                                border: '1px dashed rgba(255,255,255,0.1)', 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                justifyContent: 'center', 
-                                                color: '#64748b', 
+                                            <div style={{
+                                                height: '80px',
+                                                borderRadius: '6px',
+                                                background: 'rgba(255,255,255,0.03)',
+                                                border: '1px dashed rgba(255,255,255,0.1)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                color: '#64748b',
                                                 fontSize: '0.8rem',
                                                 marginBottom: '12px'
                                             }}>
@@ -624,11 +624,11 @@ export default function Admin() {
                                             <h3 style={{ margin: 0, fontSize: '1.2rem' }}>{p.name}</h3>
                                             {p.featured && <span style={{ background: '#d4a373', color: '#0a0e13', padding: '2px 8px', fontSize: '0.7rem', borderRadius: '4px', fontWeight: 'bold' }}>FEATURED</span>}
                                         </div>
-                                        
+
                                         <span className="stack" style={{ display: 'block', margin: '8px 0', color: '#a8a29e', fontSize: '0.85rem' }}>
                                             {p.stack}
                                         </span>
-                                        
+
                                         <p style={{ color: '#cbd5e1', fontSize: '0.85rem', lineHeight: '1.4', maxHeight: '60px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             {p.description}
                                         </p>
