@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Projects.css";
-import { FaPlus, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { useQuery } from '@tanstack/react-query';
 import ProjectCard from "./ProjectCard";
 import LightboxModal from "./LightboxModal";
 
 export default function Projects() {
-  // null = each card decides via its own scroll observer
-  // 'expanded' | 'collapsed' = manual override for all cards
-  const [forceState, setForceState] = useState(null);
-
   const [lightboxState, setLightboxState] = useState({
     isOpen: false,
     images: [],
@@ -29,15 +25,6 @@ export default function Projects() {
     }
   });
 
-  // Toggle button: cycle between forced-collapsed → forced-expanded → back to scroll-driven
-  const toggleAll = () => {
-    setForceState(prev => {
-      if (prev === null) return 'collapsed';
-      if (prev === 'collapsed') return 'expanded';
-      return null; // 'expanded' → back to scroll-driven
-    });
-  };
-
   const handleOpenLightbox = (images, activeIndex, projectName) => {
     setLightboxState({ isOpen: true, images, activeIndex, projectName });
   };
@@ -50,9 +37,6 @@ export default function Projects() {
     setLightboxState(prev => ({ ...prev, activeIndex: newIndex }));
   };
 
-  // Icon: show chevron-down if currently in "all expanded" or "auto" mode
-  const isCurrentlyCollapsed = forceState === 'collapsed';
-
   if (isLoading) return (
     <div className="projects-section" style={{ textAlign: 'center', color: '#d4a373', padding: '100px' }}>
       Loading Featured Projects...
@@ -63,14 +47,6 @@ export default function Projects() {
     <section className="projects-section" id="projects">
       <div className="section-header">
         <h2 className="projects-title">Featured Work</h2>
-        <button
-          className="collapse-toggle"
-          onClick={toggleAll}
-          aria-label="Toggle Compact View"
-          title={isCurrentlyCollapsed ? "Expand All Cards" : "Contract All Cards"}
-        >
-          {isCurrentlyCollapsed ? <FaChevronDown /> : <FaChevronUp />}
-        </button>
       </div>
 
       <div className="projects-canvas">
@@ -79,7 +55,6 @@ export default function Projects() {
             key={proj.id || idx}
             project={proj}
             onOpenLightbox={handleOpenLightbox}
-            forceState={forceState}
           />
         ))}
       </div>

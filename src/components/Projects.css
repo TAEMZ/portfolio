@@ -48,93 +48,7 @@
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* --- Inner content transitions for expand/collapse ---
-   overflow:hidden on EACH element so they self-clip to their own max-height.
-   No visibility — just opacity + pointer-events to avoid the instant-show flash. */
-.project-tile .card-media-wrapper,
-.project-tile .card-no-image-placeholder,
-.project-tile .desc,
-.project-tile .project-links,
-.project-tile .nail {
-  overflow: hidden;
-  will-change: max-height, opacity;
-}
 
-/* --- EXPANDED: gentle stretch with 150ms delay and luxury deceleration --- */
-.project-tile.card-expanded .card-media-wrapper,
-.project-tile.card-expanded .card-no-image-placeholder {
-  max-height: 560px;
-  opacity: 1;
-  pointer-events: auto;
-  transition:
-    max-height 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
-    opacity     0.6s ease 0.22s,
-    margin      0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
-}
-
-.project-tile.card-expanded .desc {
-  max-height: 300px;
-  opacity: 1;
-  transition:
-    max-height 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
-    opacity     0.6s ease 0.25s,
-    margin      0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.18s;
-}
-
-.project-tile.card-expanded .project-links {
-  max-height: 80px;
-  opacity: 1;
-  pointer-events: auto;
-  transition:
-    max-height 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
-    opacity     0.55s ease 0.28s,
-    margin      0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
-}
-
-.project-tile.card-expanded .nail {
-  opacity: 1;
-  transition: opacity 0.5s ease 0.15s;
-}
-
-/* --- COLLAPSED: quick, clean hide without lag --- */
-.project-tile.card-collapsed {
-  padding: 16px 20px !important;
-}
-
-.project-tile.card-collapsed .card-media-wrapper,
-.project-tile.card-collapsed .card-no-image-placeholder,
-.project-tile.card-collapsed .desc,
-.project-tile.card-collapsed .project-links {
-  max-height: 0;
-  opacity: 0;
-  margin: 0;
-  padding: 0;
-  pointer-events: none;
-  transition:
-    opacity     0.28s ease 0s,
-    max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1) 0.05s,
-    margin      0.4s ease 0.05s;
-}
-
-.project-tile.card-collapsed .nail,
-.project-tile.card-collapsed .featured-tag {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease 0s;
-}
-
-.project-tile.card-collapsed h3 {
-  font-size: 1.1rem;
-  margin-bottom: 4px;
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-.project-tile.card-collapsed .stack {
-  font-size: 0.76rem;
-  padding: 2px 8px;
-  margin-bottom: 0;
-}
 
 
 /* Simplified shadow on hover */
@@ -281,22 +195,7 @@
   /* Override default */
 }
 
-.collapse-toggle {
-  background: none;
-  border: none;
-  color: #d4a373;
-  font-size: 1.8rem;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-  display: flex;
-  align-items: center;
-  padding: 5px;
-}
 
-.collapse-toggle:hover {
-  transform: scale(1.2);
-  color: #fdf5e6;
-}
 
 
 /* Minimalist Transparent Admin Cards */

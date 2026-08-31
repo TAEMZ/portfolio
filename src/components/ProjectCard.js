@@ -1,52 +1,11 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState } from "react";
 import { FaGithub, FaChevronLeft, FaChevronRight, FaExpand, FaImage } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
 
-/**
- * forceState: null = use own scroll observer | 'expanded' | 'collapsed'
- */
-export default function ProjectCard({ project, onOpenLightbox, forceState }) {
+export default function ProjectCard({ project, onOpenLightbox }) {
     const images = Array.isArray(project.images) ? project.images.filter(Boolean) : [];
     const [currentIdx, setCurrentIdx] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
-
-    // Own scroll-driven expansion state
-    const [scrollExpanded, setScrollExpanded] = useState(false);
-    const observerRef = useRef(null);
-
-    // Resolved state: force override wins, otherwise use scroll state
-    const isExpanded = forceState === 'expanded' ? true
-                     : forceState === 'collapsed' ? false
-                     : scrollExpanded;
-
-    // Callback ref — sets up observer the moment this card mounts
-    const cardRef = useCallback((el) => {
-        if (observerRef.current) {
-            observerRef.current.disconnect();
-            observerRef.current = null;
-        }
-        if (!el) return;
-
-        const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) {
-                // Card entered the detection zone → expand
-                setScrollExpanded(true);
-            } else {
-                // Card left the detection zone → collapse
-                // rootMargin below ensures this fires BEFORE the card fully exits
-                setScrollExpanded(false);
-            }
-        }, {
-            threshold: 0,
-            // Shrink the bottom of the viewport by 80px:
-            // card collapses when its top is still 80px from the screen bottom (still visible)
-            // card expands once 80px of it has entered from the bottom
-            rootMargin: '0px 0px -80px 0px'
-        });
-
-        observer.observe(el);
-        observerRef.current = observer;
-    }, []);
 
     // Auto-advance preview on hover
     React.useEffect(() => {
@@ -74,8 +33,7 @@ export default function ProjectCard({ project, onOpenLightbox, forceState }) {
 
     return (
         <div
-            ref={cardRef}
-            className={`project-tile vintage-card custom-project-card ${isExpanded ? 'card-expanded' : 'card-collapsed'}`}
+            className="project-tile vintage-card custom-project-card"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
