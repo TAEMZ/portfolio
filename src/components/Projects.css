@@ -504,21 +504,22 @@
   position: relative;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   z-index: 1;
-  padding: 0;
+  padding: 10px 12px;
+  border-radius: 6px;
   transition: transform 0.35s ease, filter 0.3s ease;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35)) brightness(1.04) contrast(1.03);
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45)) brightness(1.03) contrast(1.02);
 }
 
 .card-media-wrapper:hover .card-screenshot {
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
 .image-overlay-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(14, 11, 9, 0.35) 0%, transparent 30%);
+  background: linear-gradient(to top, rgba(14, 11, 9, 0.15) 0%, transparent 20%);
   pointer-events: none;
   z-index: 1;
 }
