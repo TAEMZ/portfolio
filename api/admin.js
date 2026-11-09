@@ -1,70 +1,75 @@
-const { Client } = require('pg');
+const { getPool } = require('./_db');
+const { requireAdminSession } = require('./_auth');
 
-let AnswerEdge = null;
-(async () => {
-    try {
-        const mod = await import('@answeredge/sdk');
-        AnswerEdge = mod.AnswerEdge;
-        if (AnswerEdge && process.env.ANSWEREDGE_API_KEY) {
-            AnswerEdge.init({
-                apiKey: process.env.ANSWEREDGE_API_KEY,
-                endpoint: "https://eight-brave-soviet-principle.trycloudflare.com",
-            });
+const ALLOWED_COLUMNS = {
+    projects: ['name', 'stack', 'description', 'github', 'github_repo', 'demo', 'featured', 'images'],
+    experience: ['title', 'tech', 'period', 'details'],
+    skills: ['category', 'items'],
+};
+
+function pickAllowedFields(table, body) {
+    const allowed = ALLOWED_COLUMNS[table] || [];
+    const payload = body && typeof body === 'object' ? body : {};
+    const keys = [];
+    const values = [];
+
+    for (const col of allowed) {
+        if (Object.prototype.hasOwnProperty.call(payload, col) && payload[col] !== undefined) {
+            keys.push(col);
+            values.push(payload[col]);
         }
-    } catch (e) {
-        // SDK not loaded or in CommonJS mode
     }
-})();
+    return { keys, values };
+}
 
 module.exports = async function handler(req, res) {
-    // Track this API request if AnswerEdge is available
-    if (AnswerEdge && AnswerEdge.trackNow) {
-        try {
-            await AnswerEdge.trackNow({
-                userAgent: req.headers['user-agent'],
-                path: req.url,
-                ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress
-            });
-        } catch (e) {}
+    if (!requireAdminSession(req, res)) {
+        return;
     }
 
     const { table, id } = req.query;
     const { method, body } = req;
 
-    if (!['projects', 'experience', 'skills'].includes(table)) {
+    if (!Object.prototype.hasOwnProperty.call(ALLOWED_COLUMNS, table)) {
         return res.status(400).json({ error: 'Invalid table' });
     }
 
-    const client = new Client({
-        connectionString: process.env.POSTGRES_URL,
-    });
-
     try {
-        await client.connect();
+        const pool = getPool();
 
         switch (method) {
             case 'POST': {
-                const keys = Object.keys(body);
-                const values = Object.values(body);
+                const { keys, values } = pickAllowedFields(table, body);
+                if (keys.length === 0) {
+                    return res.status(400).json({ error: 'No valid fields provided' });
+                }
                 const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
                 const query = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
-                const result = await client.query(query, values);
+                const result = await pool.query(query, values);
                 return res.status(201).json(result.rows[0]);
             }
 
             case 'PUT': {
                 if (!id) return res.status(400).json({ error: 'ID required' });
-                const keys = Object.keys(body);
-                const values = Object.values(body);
+                const { keys, values } = pickAllowedFields(table, body);
+                if (keys.length === 0) {
+                    return res.status(400).json({ error: 'No valid fields provided' });
+                }
                 const setClause = keys.map((k, i) => `${k} = $${i + 1}`).join(', ');
                 const query = `UPDATE ${table} SET ${setClause} WHERE id = $${keys.length + 1} RETURNING *`;
-                const result = await client.query(query, [...values, id]);
+                const result = await pool.query(query, [...values, id]);
+                if (result.rowCount === 0) {
+                    return res.status(404).json({ error: 'Record not found' });
+                }
                 return res.status(200).json(result.rows[0]);
             }
 
             case 'DELETE': {
                 if (!id) return res.status(400).json({ error: 'ID required' });
-                await client.query(`DELETE FROM ${table} WHERE id = $1`, [id]);
+                const result = await pool.query(`DELETE FROM ${table} WHERE id = $1`, [id]);
+                if (result.rowCount === 0) {
+                    return res.status(404).json({ error: 'Record not found' });
+                }
                 return res.status(204).end();
             }
 
@@ -74,8 +79,6 @@ module.exports = async function handler(req, res) {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    } finally {
-        await client.end();
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 };

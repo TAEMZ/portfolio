@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import {
     FaEdit,
     FaTrash,
@@ -17,6 +18,7 @@ import "./Projects.css";
 
 const CLOUDINARY_CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || "da7hlicdz";
 const CLOUDINARY_PRESET = process.env.REACT_APP_CLOUDINARY_PRESET || "cloudinary";
+const FALLBACK_PREVIEW_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='120' viewBox='0 0 200 120'%3E%3Crect width='200' height='120' fill='%230a0e13'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23d4a373' font-family='monospace' font-size='12'%3EInvalid Image%3C/text%3E%3C/svg%3E";
 
 export default function Admin() {
     const [activeTab, setActiveTab] = useState("projects");
@@ -28,6 +30,7 @@ export default function Admin() {
     const [data, setData] = useState({ projects: [], experience: [], skills: [] });
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     // Form States
     const [projectForm, setProjectForm] = useState({
@@ -46,14 +49,33 @@ export default function Admin() {
     const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
-        checkUser();
-        fetchAllData();
+        async function init() {
+            const ok = await checkUser();
+            if (ok) {
+                await fetchAllData();
+            }
+        }
+        init();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     async function checkUser() {
-        const isLoggedIn = sessionStorage.getItem("admin_logged_in") === "true";
-        if (!isLoggedIn) navigate("/login");
+        try {
+            const res = await fetch("/api/auth?action=session", {
+                credentials: "include"
+            });
+            const session = await res.json();
+            if (!res.ok || !session.authenticated) {
+                sessionStorage.removeItem("admin_logged_in");
+                navigate("/login");
+                return false;
+            }
+            sessionStorage.setItem("admin_logged_in", "true");
+            return true;
+        } catch {
+            navigate("/login");
+            return false;
+        }
     }
 
     async function fetchAllData() {
@@ -80,6 +102,12 @@ export default function Admin() {
     }
 
     const handleLogout = async () => {
+        try {
+            await fetch("/api/auth?action=logout", {
+                method: "POST",
+                credentials: "include"
+            });
+        } catch {}
         sessionStorage.clear();
         navigate("/login");
     };
@@ -90,10 +118,19 @@ export default function Admin() {
         setSyncing(true);
         setSyncMessage("Syncing repositories & extracting screenshots from GitHub...");
         try {
-            const res = await fetch("/api/github-sync", { method: "POST" });
+            const res = await fetch("/api/github-sync", {
+                method: "POST",
+                credentials: "include"
+            });
+            if (res.status === 401) {
+                sessionStorage.removeItem("admin_logged_in");
+                navigate("/login");
+                return;
+            }
             const result = await res.json();
             if (res.ok) {
                 setSyncMessage("✅ " + (result.message || "Repositories and screenshots synced successfully!"));
+                await queryClient.invalidateQueries({ queryKey: ["projects"] });
                 fetchAllData();
             } else {
                 setSyncMessage("❌ Error: " + (result.error || "Failed to sync"));
@@ -187,9 +224,16 @@ export default function Admin() {
 
             const response = await fetch(url, {
                 method: method,
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(item)
             });
+
+            if (response.status === 401) {
+                sessionStorage.removeItem("admin_logged_in");
+                navigate("/login");
+                return false;
+            }
 
             if (!response.ok) {
                 const err = await response.json();
@@ -197,9 +241,12 @@ export default function Admin() {
             }
 
             setEditingId(null);
-            fetchAllData();
+            await queryClient.invalidateQueries({ queryKey: [table] });
+            await fetchAllData();
+            return true;
         } catch (error) {
             alert(error.message);
+            return false;
         }
     }
 
@@ -207,11 +254,19 @@ export default function Admin() {
         if (window.confirm("Are you sure you want to delete this item?")) {
             try {
                 const response = await fetch(`/api/admin?table=${table}&id=${id}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    credentials: "include"
                 });
 
+                if (response.status === 401) {
+                    sessionStorage.removeItem("admin_logged_in");
+                    navigate("/login");
+                    return;
+                }
+
                 if (!response.ok) throw new Error("Failed to delete");
-                fetchAllData();
+                await queryClient.invalidateQueries({ queryKey: [table] });
+                await fetchAllData();
             } catch (error) {
                 alert(error.message);
             }
@@ -312,10 +367,12 @@ export default function Admin() {
                             )}
                         </div>
 
-                        <form onSubmit={(e) => {
+                        <form onSubmit={async (e) => {
                             e.preventDefault();
-                            saveItem("projects", projectForm);
-                            setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false, images: [] });
+                            const saved = await saveItem("projects", projectForm);
+                            if (saved) {
+                                setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false, images: [] });
+                            }
                         }} className="contact-form">
                             <div className="premium-input-group">
                                 <label style={{ display: 'block', color: '#d4a373', fontSize: '0.85rem', marginBottom: '4px' }}>Project Name *</label>
@@ -447,7 +504,7 @@ export default function Admin() {
                                                     src={imgUrl}
                                                     alt={`Preview ${idx + 1}`}
                                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/200x120?text=Invalid+Image'; }}
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_PREVIEW_SVG; }}
                                                 />
 
                                                 {/* Cover Badge */}
@@ -663,7 +720,7 @@ export default function Admin() {
                 <div className="tab-content">
                     <div className="admin-card" style={{ marginBottom: '40px' }}>
                         <h3>{editingId ? "Edit Experience" : "Add Experience"}</h3>
-                        <form onSubmit={(e) => { e.preventDefault(); saveItem("experience", { ...expForm, details: expForm.details.split("\n").filter(d => d.trim()) }); setExpForm({ title: "", tech: "", period: "", details: "" }); }} className="contact-form">
+                        <form onSubmit={async (e) => { e.preventDefault(); const saved = await saveItem("experience", { ...expForm, details: expForm.details.split("\n").filter(d => d.trim()) }); if (saved) { setExpForm({ title: "", tech: "", period: "", details: "" }); } }} className="contact-form">
                             <div className="premium-input-group">
                                 <input type="text" placeholder="Job Title" value={expForm.title} onChange={e => setExpForm({ ...expForm, title: e.target.value })} required />
                             </div>
@@ -701,7 +758,7 @@ export default function Admin() {
                 <div className="tab-content">
                     <div className="admin-card" style={{ marginBottom: '40px' }}>
                         <h3>{editingId ? "Edit Skill Category" : "Add Skill Category"}</h3>
-                        <form onSubmit={(e) => { e.preventDefault(); saveItem("skills", { ...skillForm, items: skillForm.items.split(",").map(i => i.trim()).filter(Boolean) }); setSkillForm({ category: "", items: "" }); }} className="contact-form">
+                        <form onSubmit={async (e) => { e.preventDefault(); const saved = await saveItem("skills", { ...skillForm, items: skillForm.items.split(",").map(i => i.trim()).filter(Boolean) }); if (saved) { setSkillForm({ category: "", items: "" }); } }} className="contact-form">
                             <div className="premium-input-group">
                                 <input type="text" placeholder="Skill Category (e.g. Languages)" value={skillForm.category} onChange={e => setSkillForm({ ...skillForm, category: e.target.value })} required />
                             </div>

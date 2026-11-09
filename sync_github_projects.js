@@ -71,6 +71,12 @@ async function getReadmeScreenshots(repo) {
 }
 
 async function syncProjects() {
+    if (!GITHUB_TOKEN) {
+        throw new Error("GITHUB_TOKEN is not configured in environment.");
+    }
+    if (!process.env.POSTGRES_URL) {
+        throw new Error("POSTGRES_URL is not configured in environment.");
+    }
     console.log("Starting strict README screenshot sync...");
     const client = new Client({ connectionString: process.env.POSTGRES_URL });
     await client.connect();

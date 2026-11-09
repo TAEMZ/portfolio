@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Projects.css";
 
@@ -6,9 +6,39 @@ export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [secretWord, setSecretWord] = useState("");
-    const [isUnlocked, setIsUnlocked] = useState(sessionStorage.getItem("admin_unlocked") === "true");
+    const [isUnlocked, setIsUnlocked] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        let mounted = true;
+        async function syncSession() {
+            try {
+                const res = await fetch("/api/auth?action=session", {
+                    credentials: "include"
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!mounted) return;
+                if (data.authenticated) {
+                    sessionStorage.setItem("admin_logged_in", "true");
+                    navigate("/admin");
+                } else if (data.unlocked) {
+                    setIsUnlocked(true);
+                    sessionStorage.setItem("admin_unlocked", "true");
+                } else {
+                    sessionStorage.removeItem("admin_unlocked");
+                    sessionStorage.removeItem("admin_logged_in");
+                }
+            } catch {
+                // Keep default locked state if check fails
+            }
+        }
+        syncSession();
+        return () => {
+            mounted = false;
+        };
+    }, [navigate]);
 
     const handleUnlock = async (e) => {
         e.preventDefault();
@@ -16,12 +46,13 @@ export default function Login() {
         try {
             const response = await fetch("/api/auth?action=unlock", {
                 method: "POST",
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ value: secretWord })
             });
             const data = await response.json();
 
-            if (data.success) {
+            if (response.ok && data.success) {
                 setIsUnlocked(true);
                 sessionStorage.setItem("admin_unlocked", "true");
             } else {
@@ -39,15 +70,20 @@ export default function Login() {
         try {
             const response = await fetch("/api/auth?action=login", {
                 method: "POST",
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
             });
             const data = await response.json();
 
-            if (data.success) {
+            if (response.ok && data.success) {
                 sessionStorage.setItem("admin_logged_in", "true");
                 navigate("/admin");
             } else {
+                if (response.status === 401 && data.error === "Security check required first") {
+                    setIsUnlocked(false);
+                    sessionStorage.removeItem("admin_unlocked");
+                }
                 alert(data.error || "Invalid credentials");
             }
         } catch (err) {

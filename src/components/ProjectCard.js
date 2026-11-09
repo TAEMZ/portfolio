@@ -3,9 +3,13 @@ import { FaGithub, FaChevronLeft, FaChevronRight, FaExpand, FaImage } from "reac
 import { SiVercel } from "react-icons/si";
 
 export default function ProjectCard({ project, onOpenLightbox }) {
-    const images = Array.isArray(project.images) ? project.images.filter(Boolean) : [];
+    const rawImages = Array.isArray(project.images) ? project.images.filter(Boolean) : [];
+    const [failedUrls, setFailedUrls] = useState([]);
+    const images = rawImages.filter(url => !failedUrls.includes(url));
     const [currentIdx, setCurrentIdx] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
+
+    const safeIdx = images.length > 0 ? currentIdx % images.length : 0;
 
     // Auto-advance preview on hover
     React.useEffect(() => {
@@ -31,6 +35,10 @@ export default function ProjectCard({ project, onOpenLightbox }) {
         setCurrentIdx(idx);
     };
 
+    const handleImageError = (failedUrl) => {
+        setFailedUrls(prev => (prev.includes(failedUrl) ? prev : [...prev, failedUrl]));
+    };
+
     return (
         <div
             className="project-tile vintage-card custom-project-card"
@@ -43,26 +51,24 @@ export default function ProjectCard({ project, onOpenLightbox }) {
             {images.length > 0 ? (
                 <div
                     className="card-media-wrapper"
-                    onClick={() => onOpenLightbox && onOpenLightbox(images, currentIdx, project.name)}
+                    onClick={() => onOpenLightbox && onOpenLightbox(images, safeIdx, project.name)}
                     title="Click to view full screenshot in Lightbox"
                 >
                     <div className="card-image-container">
                         {/* Ambient Blurred Background */}
                         <img
-                            src={images[currentIdx]}
+                            src={images[safeIdx]}
                             alt=""
                             className="card-screenshot-blur-bg"
                             aria-hidden="true"
                         />
                         {/* Crisp Foreground Image */}
                         <img
-                            src={images[currentIdx]}
-                            alt={`${project.name} preview ${currentIdx + 1}`}
+                            src={images[safeIdx]}
+                            alt={`${project.name} preview ${safeIdx + 1}`}
                             className="card-screenshot"
                             loading="lazy"
-                            onError={(e) => {
-                                e.target.src = "https://via.placeholder.com/600x350?text=Screenshot+Preview";
-                            }}
+                            onError={() => handleImageError(images[safeIdx])}
                         />
                         <div className="image-overlay-gradient"></div>
                     </div>
@@ -75,7 +81,7 @@ export default function ProjectCard({ project, onOpenLightbox }) {
                     {/* Image Counter Badge */}
                     <div className="image-count-badge">
                         <FaImage style={{ fontSize: '0.75rem' }} />
-                        <span>{currentIdx + 1}/{images.length}</span>
+                        <span>{safeIdx + 1}/{images.length}</span>
                     </div>
 
                     {/* Slider Navigation Arrows */}
@@ -101,7 +107,7 @@ export default function ProjectCard({ project, onOpenLightbox }) {
                                 {images.map((_, dotIdx) => (
                                     <button
                                         key={dotIdx}
-                                        className={`carousel-dot ${dotIdx === currentIdx ? 'active' : ''}`}
+                                        className={`carousel-dot ${dotIdx === safeIdx ? 'active' : ''}`}
                                         onClick={(e) => handleDotClick(e, dotIdx)}
                                         aria-label={`Go to image ${dotIdx + 1}`}
                                     />

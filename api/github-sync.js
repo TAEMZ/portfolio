@@ -1,13 +1,12 @@
-const { Client } = require('pg');
+const { getPool } = require('./_db');
+const { requireAdminSession } = require('./_auth');
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-
-async function ghGet(path) {
+async function ghGet(path, token) {
     const url = path.startsWith('http') ? path : `https://api.github.com${path}`;
     const res = await fetch(url, {
         headers: {
             'User-Agent': 'Portfolio-App',
-            'Authorization': `token ${GITHUB_TOKEN}`,
+            'Authorization': `token ${token}`,
             'Accept': 'application/vnd.github.v3+json'
         },
         signal: AbortSignal.timeout(6000)
@@ -41,12 +40,12 @@ function isJunkImage(url) {
     );
 }
 
-async function getReadmeScreenshots(repo) {
+async function getReadmeScreenshots(repo, token) {
     const screenshots = [];
     const defaultBranch = repo.default_branch || 'main';
 
     try {
-        const readmeData = await ghGet(`/repos/${repo.full_name}/readme`);
+        const readmeData = await ghGet(`/repos/${repo.full_name}/readme`, token);
         if (readmeData && readmeData.content) {
             const rawReadme = Buffer.from(readmeData.content, 'base64').toString('utf-8');
             const imgRegex = /!\[.*?\]\((.*?)\)|<img.*?src=["'](.*?)["']/g;
@@ -71,16 +70,25 @@ async function getReadmeScreenshots(repo) {
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
+        res.setHeader('Allow', ['POST']);
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    const client = new Client({ connectionString: process.env.POSTGRES_URL });
-    try {
-        await client.connect();
+    if (!requireAdminSession(req, res)) {
+        return;
+    }
 
-        const dbProjectsRes = await client.query("SELECT * FROM projects");
+    const token = process.env.GITHUB_TOKEN;
+    if (!token) {
+        return res.status(500).json({ error: 'GITHUB_TOKEN is not configured on the server.' });
+    }
+
+    try {
+        const pool = getPool();
+
+        const dbProjectsRes = await pool.query("SELECT * FROM projects");
         const dbProjects = dbProjectsRes.rows;
-        const repos = await ghGet('/user/repos?per_page=100&sort=updated');
+        const repos = await ghGet('/user/repos?per_page=100&sort=updated', token);
         let updatedCount = 0;
 
         for (const dbProj of dbProjects) {
@@ -98,8 +106,8 @@ module.exports = async function handler(req, res) {
             }
 
             if (matchedRepo) {
-                const screenshots = await getReadmeScreenshots(matchedRepo);
-                await client.query(`
+                const screenshots = await getReadmeScreenshots(matchedRepo, token);
+                await pool.query(`
                     UPDATE projects 
                     SET images = $1,
                         github_repo = COALESCE(github_repo, $2),
@@ -115,7 +123,5 @@ module.exports = async function handler(req, res) {
     } catch (err) {
         console.error("Sync error:", err);
         return res.status(500).json({ error: err.message || "Failed to sync GitHub projects" });
-    } finally {
-        await client.end();
     }
 };

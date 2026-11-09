@@ -67,6 +67,7 @@ export default function Experience() {
                 >
                   <div className="tab-info">
                     <div className="tab-role">{exp.title}</div>
+                    {exp.period && <div className="tab-period">{exp.period}</div>}
                   </div>
                   <FaChevronRight className="tab-arrow" />
                 </button>
@@ -82,6 +83,11 @@ export default function Experience() {
           >
             <div className="dossier-detail-header">
               <h3 className="detail-title">{activeExp.title}</h3>
+              {activeExp.period && (
+                <div className="tab-period" style={{ marginBottom: "14px" }}>
+                  {activeExp.period}
+                </div>
+              )}
 
               {techList.length > 0 && (
                 <div className="detail-tech-wrap">

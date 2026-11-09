@@ -18,6 +18,7 @@ app.get('/api/get-data', getDataHandler);
 app.post('/api/admin', adminHandler);
 app.put('/api/admin', adminHandler);
 app.delete('/api/admin', adminHandler);
+app.get('/api/auth', authHandler);
 app.post('/api/auth', authHandler);
 app.post('/api/github-sync', githubSyncHandler);
 
