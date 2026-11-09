@@ -22,7 +22,7 @@ export default function Skills() {
 
   return (
     <section className="skills-section" id="skills">
-      <h2 className="skills-title glitch" data-text="SKILLS">
+      <h2 className="skills-title">
         SKILLS
       </h2>
       <div className="skill-groups">

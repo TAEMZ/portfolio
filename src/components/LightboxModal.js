@@ -46,7 +46,7 @@ export default function LightboxModal({ isOpen, images, activeIndex, projectName
                 {/* Header */}
                 <div className="lightbox-header">
                     <div className="lightbox-title-wrap">
-                        <FaImage style={{ color: '#d4a373', fontSize: '1.1rem' }} />
+                        <FaImage style={{ color: 'var(--accent)', fontSize: '1.1rem' }} />
                         <h4 className="lightbox-title">{projectName || "Screenshot Gallery"}</h4>
                         <span className="lightbox-counter">
                             {activeIndex + 1} / {images.length}

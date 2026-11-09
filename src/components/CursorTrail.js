@@ -42,9 +42,11 @@ const CursorTrail = () => {
       }
 
       if (points.current.length > 1) {
+        const isLightTheme = document.documentElement.getAttribute('data-theme') === 'light';
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.globalCompositeOperation = 'lighter'; // Makes it glow without getting muddy
+        ctx.globalCompositeOperation = isLightTheme ? 'source-over' : 'lighter';
+        const rgb = isLightTheme ? '204, 101, 24' : '223, 176, 112';
 
         for (let i = 1; i < points.current.length; i++) {
           const p = points.current[i];
@@ -53,7 +55,7 @@ const CursorTrail = () => {
           
           // Outer Soft Glow
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(212, 163, 115, ${alpha * 0.08})`; // Even dimmer
+          ctx.strokeStyle = `rgba(${rgb}, ${alpha * 0.08})`;
           ctx.lineWidth = (MAX_POINTS - p.age) * 0.6; 
           ctx.moveTo(prev.x, prev.y);
           ctx.lineTo(p.x, p.y);
@@ -61,7 +63,7 @@ const CursorTrail = () => {
 
           // Inner Sharp Core
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(212, 163, 115, ${alpha * 0.25})`; // Dimmer core
+          ctx.strokeStyle = `rgba(${rgb}, ${alpha * 0.25})`;
           ctx.lineWidth = (MAX_POINTS - p.age) * 0.2;
           ctx.moveTo(prev.x, prev.y);
           ctx.lineTo(p.x, p.y);

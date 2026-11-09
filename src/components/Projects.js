@@ -38,7 +38,7 @@ export default function Projects() {
   };
 
   if (isLoading) return (
-    <div className="projects-section" style={{ textAlign: 'center', color: '#d4a373', padding: '100px' }}>
+    <div className="projects-section" style={{ textAlign: 'center', color: 'var(--accent)', padding: '100px' }}>
       Loading Featured Projects...
     </div>
   );
@@ -64,23 +64,23 @@ export default function Projects() {
           to="/projects"
           className="icon-link view-more-btn"
           style={{
-            fontSize: '1.1rem',
+            fontSize: '1.02rem',
             display: 'inline-flex',
             alignItems: 'center',
             gap: '10px',
-            color: '#d4a373',
+            color: 'var(--accent)',
             textDecoration: 'none',
             padding: '12px 28px',
-            borderRadius: '6px',
-            border: '1px solid rgba(212, 163, 115, 0.4)',
-            background: 'rgba(212, 163, 115, 0.08)',
-            transition: 'all 0.3s ease',
-            fontFamily: 'Courier Prime, monospace',
-            fontWeight: 'bold'
+            borderRadius: '7px',
+            border: '1px solid var(--accent-border)',
+            background: 'var(--surface-subtle)',
+            transition: 'all 0.25s ease',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: '600'
           }}
         >
           <span>View All Projects Gallery</span>
-          <FaPlus style={{ fontSize: '0.9rem' }} />
+          <FaPlus style={{ fontSize: '0.85rem' }} />
         </Link>
       </div>
 

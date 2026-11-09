@@ -4,8 +4,21 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#0c0c0e" />
     <meta name="google-site-verification" content="Plwil75GOY8GuZdpAZ4fmICGf9mLJcmEdvUevrMDHEU" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      try {
+        var savedTheme = localStorage.getItem("portfolio-theme");
+        if (savedTheme === "light" || savedTheme === "dark") {
+          document.documentElement.setAttribute("data-theme", savedTheme);
+        } else {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {}
+    </script>
     <title>Abiy Kibru | Creative Full-Stack Developer & Mobile Engineer</title>
     <meta name="description" content="Portfolio of Abiy Kibru, a creative Full-Stack Developer specializing in modern web and mobile solutions using React, Flutter, and Node.js. Based in Ethiopia, building premium digital experiences." />
     <meta name="keywords" content="Abiy Kibru, Abiy, Software Engineer, Full-Stack Developer, React Developer, Flutter Developer, Mobile App Developer, Ethiopia Tech, Web Design, Portfolio" />

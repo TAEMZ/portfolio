@@ -61,7 +61,7 @@ export default function AllProjects() {
     });
 
     if (isLoading) return (
-        <div className="projects-section" style={{ color: '#d4a373', textAlign: 'center', padding: '100px', fontSize: '1.2rem' }}>
+        <div className="projects-section" style={{ color: 'var(--accent)', textAlign: 'center', padding: '100px', fontSize: '1.2rem' }}>
             Loading Project Gallery...
         </div>
     );
@@ -79,7 +79,7 @@ export default function AllProjects() {
             {/* Filter & Search Controls */}
             <div style={{ maxWidth: '1200px', margin: '0 auto 40px', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-                    <span style={{ color: '#d4a373', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', marginRight: '5px' }}>
+                    <span style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', marginRight: '5px' }}>
                         <FaFilter /> Filter:
                     </span>
                     {["all", "with_images", "flutter", "react", "typescript", "python"].map((tag) => (
@@ -94,7 +94,7 @@ export default function AllProjects() {
                                 borderRadius: '20px'
                             }}
                         >
-                            {tag === "all" ? "All Projects" : tag === "with_images" ? "With Screenshots 📸" : tag}
+                            {tag === "all" ? "All Projects" : tag === "with_images" ? "With Screenshots" : tag}
                         </button>
                     ))}
                 </div>
@@ -108,12 +108,12 @@ export default function AllProjects() {
                         style={{
                             width: '100%',
                             padding: '8px 14px',
-                            background: 'rgba(0, 0, 0, 0.4)',
-                            border: '1px solid rgba(212, 163, 115, 0.3)',
+                            background: 'var(--surface-input)',
+                            border: '1px solid var(--accent-border)',
                             borderRadius: '20px',
-                            color: '#fff',
+                            color: 'var(--text-primary)',
                             fontSize: '0.85rem',
-                            fontFamily: 'Courier Prime, monospace'
+                            fontFamily: 'var(--font-sans)'
                         }}
                     />
                 </div>
@@ -131,7 +131,7 @@ export default function AllProjects() {
             </div>
 
             {filteredProjects.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '60px 20px', color: '#94a3b8' }}>
+                <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-muted)' }}>
                     No projects found matching your search criteria.
                 </div>
             )}
