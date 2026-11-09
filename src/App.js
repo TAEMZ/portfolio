@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
@@ -38,6 +39,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/projects" element={<AllProjects />} />
       </Routes>
+      <Analytics />
     </>
   );
 }
