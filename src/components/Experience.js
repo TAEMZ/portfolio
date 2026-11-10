@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import "./Experience.css";
 import { useQuery } from "@tanstack/react-query";
+import ScrambleText from "./ScrambleText";
 import {
   FaCode,
   FaReact,
@@ -107,7 +108,7 @@ export default function Experience() {
         <div className="experience-inner">
           <div className="experience-header-block">
             <span className="experience-accent-bar" aria-hidden="true"></span>
-            <h2 className="experience-title">Experience &amp; Career</h2>
+            <ScrambleText as="h2" className="experience-title" text="Experience & Career" />
           </div>
           <p className="experience-empty">No experiences logged.</p>
         </div>
@@ -129,7 +130,7 @@ export default function Experience() {
       <div className="experience-inner">
         <div className="experience-header-block">
           <span className="experience-accent-bar" aria-hidden="true"></span>
-          <h2 className="experience-title">Experience &amp; Career</h2>
+          <ScrambleText as="h2" className="experience-title" text="Experience & Career" />
         </div>
 
         <div className="timeline-layout">

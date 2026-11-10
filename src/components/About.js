@@ -1,5 +1,6 @@
 import React from "react";
 import "./About.css";
+import ScrambleText from "./ScrambleText";
 import { FaJava, FaReact, FaNodeJs } from "react-icons/fa";
 import { SiFlutter, SiFirebase, SiPython, SiNextdotjs, SiSupabase, SiDocker, SiCpanel } from "react-icons/si";
 
@@ -19,7 +20,7 @@ export default function About() {
 
   return (
     <section className="about-section" id="about">
-      <h2 className="about-title">ABOUT ME</h2>
+      <ScrambleText as="h2" className="about-title" text="ABOUT ME" />
       <div className="about-card">
         <p className="about-text">
           I build what I relate to—solving real problems I encounter daily. I

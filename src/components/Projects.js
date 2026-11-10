@@ -5,6 +5,7 @@ import { FaPlus } from "react-icons/fa";
 import { useQuery } from '@tanstack/react-query';
 import ProjectCard from "./ProjectCard";
 import LightboxModal from "./LightboxModal";
+import ScrambleText from "./ScrambleText";
 
 export default function Projects() {
   const [lightboxState, setLightboxState] = useState({
@@ -46,7 +47,7 @@ export default function Projects() {
   return (
     <section className="projects-section" id="projects">
       <div className="section-header">
-        <h2 className="projects-title">Featured Work</h2>
+        <ScrambleText as="h2" className="projects-title" text="Featured Work" />
       </div>
 
       <div className="projects-canvas">

@@ -2,6 +2,7 @@ import React from "react";
 import "./Skills.css";
 
 import { useQuery } from '@tanstack/react-query';
+import ScrambleText from "./ScrambleText";
 
 export default function Skills() {
   const { data: skills = {}, isLoading } = useQuery({
@@ -22,9 +23,7 @@ export default function Skills() {
 
   return (
     <section className="skills-section" id="skills">
-      <h2 className="skills-title">
-        SKILLS
-      </h2>
+      <ScrambleText as="h2" className="skills-title" text="SKILLS" />
       <div className="skill-groups">
         {Object.entries(skills).length === 0 ? (
           <p>No skills found.</p>

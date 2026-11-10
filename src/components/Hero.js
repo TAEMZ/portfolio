@@ -3,7 +3,7 @@ import "./Hero.css";
 import heroFace from "../assets/hero_face.png";
 import heroFaceLight from "../assets/hero_face_light.png";
 import { FaReact, FaNodeJs, FaArrowRight } from "react-icons/fa";
-import { SiFlutter, SiFirebase } from "react-icons/si";
+import { SiFlutter, SiFirebase, SiNextdotjs } from "react-icons/si";
 
 export default function Hero() {
   const [text, setText] = useState("");
@@ -88,6 +88,10 @@ export default function Hero() {
             <span className="hero-tech-item">
               <FaReact className="hero-tech-icon" aria-hidden="true" />
               <span>React</span>
+            </span>
+            <span className="hero-tech-item">
+              <SiNextdotjs className="hero-tech-icon" aria-hidden="true" />
+              <span>Next.js</span>
             </span>
             <span className="hero-tech-item">
               <SiFlutter className="hero-tech-icon" aria-hidden="true" />
