@@ -81,6 +81,8 @@
 
 /* "Get CV" Button */
 .cv-button {
+  position: relative;
+  overflow: hidden;
   background: var(--accent-gradient);
   color: var(--accent-contrast);
   font-family: var(--font-sans);
@@ -96,6 +98,7 @@
   box-shadow: var(--shadow-accent);
   cursor: pointer;
   text-decoration: none;
+  animation: cvButtonPulse 3.6s ease-in-out infinite;
 }
 
 .navbar-cv-brand {
@@ -103,7 +106,61 @@
 }
 
 .cv-button * {
+  position: relative;
+  z-index: 1;
   color: inherit;
+}
+
+.cv-button::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  left: -140%;
+  z-index: 2;
+  width: 75%;
+  height: 150%;
+  background: linear-gradient(
+    105deg,
+    transparent 15%,
+    rgba(255, 255, 255, 0.42) 38%,
+    rgba(255, 255, 255, 0.92) 50%,
+    rgba(255, 255, 255, 0.42) 62%,
+    transparent 85%
+  );
+  transform: skewX(-24deg);
+  pointer-events: none;
+  animation: cvButtonSheen 3.6s ease-in-out infinite;
+}
+
+@keyframes cvButtonSheen {
+  0%,
+  10% {
+    left: -140%;
+    opacity: 0;
+  }
+  16% {
+    opacity: 1;
+  }
+  56% {
+    opacity: 1;
+  }
+  62%,
+  100% {
+    left: 165%;
+    opacity: 0;
+  }
+}
+
+@keyframes cvButtonPulse {
+  0%,
+  14%,
+  64%,
+  100% {
+    box-shadow: var(--shadow-accent);
+  }
+  38% {
+    box-shadow: 0 0 22px rgba(232, 189, 130, 0.52), var(--shadow-accent);
+  }
 }
 
 .cv-button:hover {
@@ -114,6 +171,17 @@
 
 [data-theme="light"] .cv-button {
   border-color: var(--accent-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-button {
+    animation: none;
+  }
+
+  .cv-button::after {
+    animation: none;
+    display: none;
+  }
 }
 
 /* Right Action Cluster (Theme Toggle + Mobile Menu Button) */

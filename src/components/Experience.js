@@ -1,7 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import "./Experience.css";
 import { useQuery } from "@tanstack/react-query";
-import { FaCode, FaReact, FaNodeJs, FaPython, FaDocker, FaJava } from "react-icons/fa";
+import {
+  FaCode,
+  FaReact,
+  FaNodeJs,
+  FaPython,
+  FaDocker,
+  FaJava,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 import {
   SiNextdotjs,
   SiTypescript,
@@ -35,6 +44,8 @@ function getTechIcon(toolName) {
 
 export default function Experience() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const sidebarRef = useRef(null);
+  const scrollTimerRef = useRef(null);
 
   const { data: experiences = [], isLoading } = useQuery({
     queryKey: ["experience"],
@@ -45,6 +56,40 @@ export default function Experience() {
       return data;
     },
   });
+
+  const scrollToIndex = useCallback((idx) => {
+    const el = sidebarRef.current;
+    if (!el || el.clientWidth <= 0) return;
+    el.scrollTo?.({ left: idx * el.clientWidth, behavior: "smooth" });
+  }, []);
+
+  const stepRole = (delta) => {
+    if (experiences.length === 0) return;
+    const nextIndex = Math.max(0, Math.min(experiences.length - 1, activeIndex + delta));
+    setActiveIndex(nextIndex);
+    scrollToIndex(nextIndex);
+  };
+
+  useEffect(() => {
+    const el = sidebarRef.current;
+    if (!el) return;
+
+    const handleScroll = () => {
+      if (el.scrollWidth <= el.clientWidth + 8 || el.clientWidth <= 0) return;
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = setTimeout(() => {
+        const snappedIndex = Math.round(el.scrollLeft / el.clientWidth);
+        const clamped = Math.max(0, Math.min(experiences.length - 1, snappedIndex));
+        setActiveIndex((prev) => (prev !== clamped ? clamped : prev));
+      }, 90);
+    };
+
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", handleScroll);
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, [experiences.length]);
 
   if (isLoading) {
     return (
@@ -88,28 +133,62 @@ export default function Experience() {
         </div>
 
         <div className="timeline-layout">
-          {/* Left Column: Vertical Career Timeline Selector */}
-          <div className="timeline-sidebar" role="tablist" aria-label="Career Roles">
-            {experiences.map((exp, idx) => {
-              const isActive = idx === activeIndex;
-              return (
-                <button
-                  key={exp.id || idx}
-                  type="button"
-                  className={`timeline-tab ${isActive ? "active" : ""}`}
-                  onClick={() => setActiveIndex(idx)}
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-controls={`timeline-panel-${idx}`}
-                >
-                  <span className="timeline-node" aria-hidden="true"></span>
-                  <div className="timeline-tab-info">
-                    <div className="timeline-tab-role">{exp.title}</div>
-                    {exp.period && <div className="timeline-tab-period">{exp.period}</div>}
-                  </div>
-                </button>
-              );
-            })}
+          {/* Left Column: Career Timeline Selector (One-at-a-Time with Sideways Arrows on Mobile) */}
+          <div
+            className={`timeline-sidebar-wrap ${
+              experiences.length > 1 ? "has-multiple" : ""
+            }`}
+          >
+            <button
+              type="button"
+              className="timeline-scroll-arrow timeline-scroll-arrow-left"
+              onClick={() => stepRole(-1)}
+              disabled={activeIndex <= 0}
+              aria-label="Previous career role"
+            >
+              <FaChevronLeft aria-hidden="true" />
+            </button>
+
+            <div
+              ref={sidebarRef}
+              className="timeline-sidebar"
+              role="tablist"
+              aria-label="Career Roles"
+            >
+              {experiences.map((exp, idx) => {
+                const isActive = idx === activeIndex;
+                return (
+                  <button
+                    key={exp.id || idx}
+                    type="button"
+                    className={`timeline-tab ${isActive ? "active" : ""}`}
+                    onClick={() => {
+                      setActiveIndex(idx);
+                      scrollToIndex(idx);
+                    }}
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`timeline-panel-${idx}`}
+                  >
+                    <span className="timeline-node" aria-hidden="true"></span>
+                    <div className="timeline-tab-info">
+                      <div className="timeline-tab-role">{exp.title}</div>
+                      {exp.period && <div className="timeline-tab-period">{exp.period}</div>}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              className="timeline-scroll-arrow timeline-scroll-arrow-right"
+              onClick={() => stepRole(1)}
+              disabled={activeIndex >= experiences.length - 1}
+              aria-label="Next career role"
+            >
+              <FaChevronRight aria-hidden="true" />
+            </button>
           </div>
 
           {/* Right Column: Selected Role Details */}
