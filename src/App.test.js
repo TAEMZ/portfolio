@@ -100,4 +100,56 @@ describe('Portfolio App', () => {
     fireEvent.click(secondRoleTab);
     expect(screen.getByText('Built responsive mobile apps')).toBeInTheDocument();
   });
+
+  test('renders coverflow skills carousel across multiple skill categories', async () => {
+    global.fetch = jest.fn((url) => {
+      if (typeof url === 'string' && url.includes('table=skills')) {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve([
+              { id: 1, category: 'Frontend', items: ['React', 'Next.js', 'TypeScript'] },
+              { id: 2, category: 'Backend & Cloud', items: ['Node.js', 'PostgreSQL'] },
+              { id: 3, category: 'Mobile & Tooling', items: ['Flutter', 'Docker'] },
+            ]),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    });
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/']}>
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    expect(await screen.findByText('Frontend')).toBeInTheDocument();
+    expect(screen.getByText('Mobile & Tooling')).toBeInTheDocument();
+    expect(screen.getByText('01 / 03')).toBeInTheDocument();
+    expect(screen.getByText('03 / 03')).toBeInTheDocument();
+    expect(container.querySelector('.skills-coverflow-swiper')).toBeInTheDocument();
+    expect(container.querySelectorAll('.skills-carousel-slide')).toHaveLength(3);
+    expect(container.querySelector('.swiper-pagination')).toBeInTheDocument();
+    expect(container.querySelectorAll('.swiper-pagination-bullet')).toHaveLength(3);
+    const prevBtn = screen.getByRole('button', { name: /Previous skill category/i });
+    const nextBtn = screen.getByRole('button', { name: /Next skill category/i });
+    expect(prevBtn).toBeInTheDocument();
+    expect(nextBtn).toBeInTheDocument();
+    fireEvent.click(nextBtn);
+    fireEvent.click(prevBtn);
+    expect(container.querySelector('.swiper-slide-active')).toBeInTheDocument();
+  });
 });
