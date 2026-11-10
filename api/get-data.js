@@ -14,7 +14,14 @@ module.exports = async function handler(req, res) {
 
     try {
         const pool = getPool();
-        const result = await pool.query(`SELECT * FROM ${table} ORDER BY created_at ${table === 'skills' ? 'ASC' : 'DESC'}`);
+        res.setHeader('Cache-Control', 'no-store');
+        const orderBy =
+            table === 'projects'
+                ? 'rank ASC NULLS LAST, created_at DESC, id DESC'
+                : table === 'skills'
+                ? 'created_at ASC'
+                : 'created_at DESC';
+        const result = await pool.query(`SELECT * FROM ${table} ORDER BY ${orderBy}`);
         return res.status(200).json(result.rows);
     } catch (error) {
         console.error(error);

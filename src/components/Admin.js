@@ -40,13 +40,16 @@ export default function Admin() {
         github: "",
         demo: "",
         featured: false,
+        rank: "",
         images: []
     });
     const [expForm, setExpForm] = useState({ title: "", tech: "", period: "", details: "" });
     const [skillForm, setSkillForm] = useState({ category: "", items: "" });
 
-    // Editing State
+    // Editing & Inline Rank State
     const [editingId, setEditingId] = useState(null);
+    const [rankDrafts, setRankDrafts] = useState({});
+    const [savingRankId, setSavingRankId] = useState(null);
 
     useEffect(() => {
         async function init() {
@@ -81,7 +84,7 @@ export default function Admin() {
     async function fetchAllData() {
         setLoading(true);
         try {
-            const pResp = await fetch("/api/get-data?table=projects");
+            const pResp = await fetch("/api/get-data?table=projects", { cache: "no-store" });
             const projects = await pResp.json();
 
             const eResp = await fetch("/api/get-data?table=experience");
@@ -90,8 +93,16 @@ export default function Admin() {
             const sResp = await fetch("/api/get-data?table=skills");
             const skills = await sResp.json();
 
+            const safeProjects = Array.isArray(projects) ? projects : [];
+            const nextRankDrafts = {};
+            for (const proj of safeProjects) {
+                nextRankDrafts[proj.id] =
+                    proj.rank !== null && proj.rank !== undefined ? String(proj.rank) : "";
+            }
+            setRankDrafts(nextRankDrafts);
+
             setData({
-                projects: Array.isArray(projects) ? projects : [],
+                projects: safeProjects,
                 experience: Array.isArray(experience) ? experience : [],
                 skills: Array.isArray(skills) ? skills : []
             });
@@ -236,7 +247,7 @@ export default function Admin() {
             }
 
             if (!response.ok) {
-                const err = await response.json();
+                const err = await response.json().catch(() => ({}));
                 throw new Error(err.error || "Failed to save");
             }
 
@@ -273,6 +284,47 @@ export default function Admin() {
         }
     }
 
+    async function updateProjectRank(projectId) {
+        const raw = (rankDrafts[projectId] ?? "").trim();
+        let nextRank = null;
+        if (raw !== "") {
+            const parsed = Number(raw);
+            if (!Number.isInteger(parsed) || parsed < 1) {
+                alert("Rank must be a positive whole number (1, 2, 3...) or left blank.");
+                return;
+            }
+            nextRank = parsed;
+        }
+
+        setSavingRankId(projectId);
+        try {
+            const response = await fetch(`/api/admin?table=projects&id=${projectId}`, {
+                method: "PUT",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rank: nextRank })
+            });
+
+            if (response.status === 401) {
+                sessionStorage.removeItem("admin_logged_in");
+                navigate("/login");
+                return;
+            }
+
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err.error || "Failed to update project rank");
+            }
+
+            await queryClient.invalidateQueries({ queryKey: ["projects"] });
+            await fetchAllData();
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            setSavingRankId(null);
+        }
+    }
+
     const startEdit = (tab, item) => {
         setEditingId(item.id);
         if (tab === "projects") {
@@ -283,6 +335,7 @@ export default function Admin() {
                 github: item.github || "",
                 demo: item.demo || "",
                 featured: item.featured || false,
+                rank: item.rank !== null && item.rank !== undefined ? String(item.rank) : "",
                 images: Array.isArray(item.images) ? item.images : []
             });
             window.scrollTo({ top: 120, behavior: 'smooth' });
@@ -303,7 +356,7 @@ export default function Admin() {
 
     const cancelEdit = () => {
         setEditingId(null);
-        setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false, images: [] });
+        setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false, rank: "", images: [] });
         setExpForm({ title: "", tech: "", period: "", details: "" });
         setSkillForm({ category: "", items: "" });
     };
@@ -369,14 +422,62 @@ export default function Admin() {
 
                         <form onSubmit={async (e) => {
                             e.preventDefault();
-                            const saved = await saveItem("projects", projectForm);
+                            const rawRank = String(projectForm.rank ?? "").trim();
+                            let parsedRank = null;
+                            if (rawRank !== "") {
+                                const num = Number(rawRank);
+                                if (!Number.isInteger(num) || num < 1) {
+                                    alert("Display Rank must be a positive whole number (1 or higher), or left blank.");
+                                    return;
+                                }
+                                parsedRank = num;
+                            }
+                            const saved = await saveItem("projects", {
+                                ...projectForm,
+                                rank: parsedRank
+                            });
                             if (saved) {
-                                setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false, images: [] });
+                                setProjectForm({ name: "", stack: "", description: "", github: "", demo: "", featured: false, rank: "", images: [] });
                             }
                         }} className="contact-form">
-                            <div className="premium-input-group">
-                                <label style={{ display: 'block', color: '#d4a373', fontSize: '0.85rem', marginBottom: '4px' }}>Project Name *</label>
-                                <input type="text" placeholder="e.g. SkillSnap – Flutter App" value={projectForm.name} onChange={e => setProjectForm({ ...projectForm, name: e.target.value })} required />
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
+                                <div className="premium-input-group" style={{ flex: '2 1 280px' }}>
+                                    <label style={{ display: 'block', color: '#d4a373', fontSize: '0.85rem', marginBottom: '4px' }}>Project Name *</label>
+                                    <input type="text" placeholder="e.g. SkillSnap – Flutter App" value={projectForm.name} onChange={e => setProjectForm({ ...projectForm, name: e.target.value })} required />
+                                </div>
+
+                                <div className="premium-input-group" style={{ flex: '1 1 220px' }}>
+                                    <label style={{ display: 'block', color: '#d4a373', fontSize: '0.85rem', marginBottom: '4px' }}>Set Rank (1 = First)</label>
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            step="1"
+                                            placeholder={editingId ? "Position #" : `End (#${data.projects.length + 1})`}
+                                            value={projectForm.rank}
+                                            onChange={e => setProjectForm({ ...projectForm, rank: e.target.value })}
+                                            style={{ flex: 1, minWidth: '90px' }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setProjectForm({ ...projectForm, rank: "1" })}
+                                            className={`admin-btn ${String(projectForm.rank) === "1" ? "active" : ""}`}
+                                            style={{ padding: '10px 12px', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
+                                            title="Place at #1 (Top)"
+                                        >
+                                            #1 Top
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setProjectForm({ ...projectForm, rank: "" })}
+                                            className={`admin-btn ${String(projectForm.rank) === "" ? "active" : ""}`}
+                                            style={{ padding: '10px 12px', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
+                                            title="Place at end of list"
+                                        >
+                                            End
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="premium-input-group">
@@ -625,14 +726,17 @@ export default function Admin() {
                     </div>
 
                     {/* Projects Listing */}
-                    <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                         <h3 style={{ color: '#fff', margin: 0 }}>All Projects ({data.projects.length})</h3>
-                        <span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Click Edit to modify details or images</span>
+                        <span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Set Rank (1 = first) directly on any card, or click Edit for full details</span>
                     </div>
 
                     <div className="projects-canvas">
                         {data.projects.map(p => {
                             const images = Array.isArray(p.images) ? p.images : [];
+                            const savedRankStr = p.rank !== null && p.rank !== undefined ? String(p.rank) : "";
+                            const draftRankStr = rankDrafts[p.id] ?? savedRankStr;
+                            const hasRankChanged = draftRankStr.trim() !== savedRankStr;
                             return (
                                 <div className="admin-card" key={p.id} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                     <div>
@@ -679,7 +783,26 @@ export default function Admin() {
 
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
                                             <h3 style={{ margin: 0, fontSize: '1.2rem' }}>{p.name}</h3>
-                                            {p.featured && <span style={{ background: '#d4a373', color: '#0a0e13', padding: '2px 8px', fontSize: '0.7rem', borderRadius: '4px', fontWeight: 'bold' }}>FEATURED</span>}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                                                {p.rank !== null && p.rank !== undefined && (
+                                                    <div style={{
+                                                        background: 'var(--accent-soft)',
+                                                        color: 'var(--accent)',
+                                                        border: '1px solid var(--accent-border)',
+                                                        padding: '2px 7px',
+                                                        fontSize: '0.7rem',
+                                                        borderRadius: '4px',
+                                                        fontWeight: '700'
+                                                    }}>
+                                                        #{p.rank}
+                                                    </div>
+                                                )}
+                                                {p.featured && (
+                                                    <div style={{ background: '#d4a373', color: '#0a0e13', padding: '2px 8px', fontSize: '0.7rem', borderRadius: '4px', fontWeight: 'bold' }}>
+                                                        FEATURED
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
 
                                         <span className="stack" style={{ display: 'block', margin: '8px 0', color: '#a8a29e', fontSize: '0.85rem' }}>
@@ -691,22 +814,80 @@ export default function Admin() {
                                         </p>
                                     </div>
 
-                                    <div style={{ marginTop: '15px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ display: 'flex', gap: '10px' }}>
-                                            {p.github && (
-                                                <a href={p.github} target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', fontSize: '0.85rem', textDecoration: 'none' }} title="GitHub">
-                                                    GitHub <FaExternalLinkAlt style={{ fontSize: '0.7rem' }} />
-                                                </a>
-                                            )}
-                                            {p.demo && (
-                                                <a href={p.demo} target="_blank" rel="noopener noreferrer" style={{ color: '#38bdf8', fontSize: '0.85rem', textDecoration: 'none' }} title="Demo">
-                                                    Demo <FaExternalLinkAlt style={{ fontSize: '0.7rem' }} />
-                                                </a>
-                                            )}
+                                    <div>
+                                        <div style={{
+                                            marginTop: '12px',
+                                            padding: '8px 10px',
+                                            borderRadius: '6px',
+                                            background: 'var(--surface-subtle)',
+                                            border: '1px solid var(--border-subtle)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            gap: '8px'
+                                        }}>
+                                            <label
+                                                htmlFor={`project-rank-${p.id}`}
+                                                style={{ fontSize: '0.78rem', fontWeight: '600', color: 'var(--accent)', letterSpacing: '0.4px' }}
+                                            >
+                                                Display Rank
+                                            </label>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <input
+                                                    id={`project-rank-${p.id}`}
+                                                    type="number"
+                                                    min="1"
+                                                    step="1"
+                                                    placeholder="—"
+                                                    value={draftRankStr}
+                                                    onChange={e => setRankDrafts(prev => ({ ...prev, [p.id]: e.target.value }))}
+                                                    onKeyDown={e => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            updateProjectRank(p.id);
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        width: '68px',
+                                                        padding: '5px 8px',
+                                                        background: 'var(--surface-input)',
+                                                        border: '1px solid var(--accent-border)',
+                                                        borderRadius: '5px',
+                                                        color: 'var(--text-primary)',
+                                                        fontSize: '0.85rem',
+                                                        textAlign: 'center'
+                                                    }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => updateProjectRank(p.id)}
+                                                    disabled={savingRankId === p.id}
+                                                    className={`admin-btn ${hasRankChanged ? 'active' : ''}`}
+                                                    style={{ padding: '5px 10px', fontSize: '0.78rem' }}
+                                                    title="Save display rank"
+                                                >
+                                                    {savingRankId === p.id ? "Saving..." : "Set"}
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="admin-actions" style={{ marginTop: 0 }}>
-                                            <button onClick={() => startEdit("projects", p)} className="admin-icon-btn" title="Edit"><FaEdit /></button>
-                                            <button onClick={() => deleteItem("projects", p.id)} className="admin-icon-btn delete" title="Delete"><FaTrash /></button>
+
+                                        <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                {p.github && (
+                                                    <a href={p.github} target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', fontSize: '0.85rem', textDecoration: 'none' }} title="GitHub">
+                                                        GitHub <FaExternalLinkAlt style={{ fontSize: '0.7rem' }} />
+                                                    </a>
+                                                )}
+                                                {p.demo && (
+                                                    <a href={p.demo} target="_blank" rel="noopener noreferrer" style={{ color: '#38bdf8', fontSize: '0.85rem', textDecoration: 'none' }} title="Demo">
+                                                        Demo <FaExternalLinkAlt style={{ fontSize: '0.7rem' }} />
+                                                    </a>
+                                                )}
+                                            </div>
+                                            <div className="admin-actions" style={{ marginTop: 0 }}>
+                                                <button onClick={() => startEdit("projects", p)} className="admin-icon-btn" title="Edit"><FaEdit /></button>
+                                                <button onClick={() => deleteItem("projects", p.id)} className="admin-icon-btn delete" title="Delete"><FaTrash /></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
