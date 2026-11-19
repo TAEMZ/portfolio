@@ -33,3 +33,9 @@ project-*.json
 .venv/
 __pycache__/
 *.py[cod]
+
+# Generated PDFs & CV versions
+*.pdf
+
+# Python scripts and scratch utilities
+*.py

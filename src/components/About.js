@@ -23,10 +23,10 @@ export default function About() {
       <ScrambleText as="h2" className="about-title" text="ABOUT ME" />
       <div className="about-card">
         <p className="about-text">
-          I build what I relate to—solving real problems I encounter daily. I
-          strive to master the entire ecosystem, orchestrating the invisible
-          data structures and network pathways to ensuring I truly command every
-          layer of what I create.
+          I build practical tools for problems I run into firsthand. Rather
+          than staying in one corner of the stack, I work across the entire
+          lifecycle: building intuitive frontends, designing reliable databases,
+          and keeping services fast and dependable.
         </p>
 
         <div className="tech-stack">

@@ -13,7 +13,7 @@ import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persist
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Data considered fresh for 5 minutes — no refetch while tab is open
+      // Data considered fresh for 5 minutes - no refetch while tab is open
       staleTime: 1000 * 60 * 5,
       // Keep unused cache for 24 hours (persisted to localStorage)
       gcTime: 1000 * 60 * 60 * 24,

@@ -838,7 +838,7 @@ export default function Admin() {
                                                     type="number"
                                                     min="1"
                                                     step="1"
-                                                    placeholder="—"
+                                                    placeholder="-"
                                                     value={draftRankStr}
                                                     onChange={e => setRankDrafts(prev => ({ ...prev, [p.id]: e.target.value }))}
                                                     onKeyDown={e => {

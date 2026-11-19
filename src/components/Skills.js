@@ -186,6 +186,6 @@ export default function Skills() {
 }
 
 /**
- * Inspired by Skiper 49 Carousel_003 — React + Swiper
+ * Inspired by Skiper 49 Carousel_003 - React + Swiper
  * Original author: @gurvinder-singh02 (https://gxuri.me)
  */
